@@ -1,48 +1,23 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import {User} from "./user.entity";
+import {Repository} from "typeorm";
+import {InjectRepository} from "@nestjs/typeorm";
 
 @Injectable()
 export class UserService {
-    private users: { userId: number; name: string; email: string }[] = [
-        { userId: 1, name: 'John', email: 'john@example.com' },
-        { userId: 2, name: 'Jane', email: 'jane@example.com' },
-        { userId: 3, name: 'Bob', email: 'bob@example.com' },
-    ];
+    constructor(
+        @InjectRepository(User)
+        private readonly userRepository: Repository<User>,
+    ) {}
 
-    async getAllUsers() {
-        return this.users;
+    async findByEmail(email: string): Promise<User | undefined> {
+        return await this.userRepository.findOne({
+            where: { email, deletedAt: null },
+            select: ['userId', 'email', 'password', 'nickname', 'fileId', 'createdAt', 'updatedAt', 'deletedAt'], // 비밀번호 포함
+        });
     }
 
-    async getUserById(userId: number) {
-        const user = this.users.find(user => user.userId === userId);
-        if (!user) {
-            throw new NotFoundException('User not found');
-        }
-        return user;
-    }
-
-    async addUser(name: string, email: string) {
-        const newUser = {
-            userId: this.users.length + 1,
-            name,
-            email,
-        };
-        this.users.push(newUser);
-        return newUser;
-    }
-
-    async updateUser(userId: number, name: string, email: string) {
-        const user = await this.getUserById(userId);
-        user.name = name;
-        user.email = email;
-        return user;
-    }
-
-    async deleteUser(userId: number) {
-        const userIndex = this.users.findIndex(user => user.userId === userId);
-        if (userIndex === -1) {
-            throw new NotFoundException('User not found');
-        }
-
-        this.users.splice(userIndex, 1);
+    async updateProfileImage(userId: number, profileImagePath: string): Promise<void> {
+        await this.userRepository.update(userId, { profileImagePath });
     }
 }
