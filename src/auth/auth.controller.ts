@@ -13,7 +13,6 @@ export class AuthController {
      */
 
     // 로그인
-    // dto 제거
     @Post('login')
     async loginUser(@Body('email') email: string, @Body('password') password: string) {
 
@@ -35,7 +34,6 @@ export class AuthController {
     }
 
     // 회원가입
-    // dto 제거
     @Post('signup')
     async signUpUser(
         @Body('email') email: string,

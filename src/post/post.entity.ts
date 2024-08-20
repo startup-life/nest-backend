@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { User } from '../user/user.entity';
 import { File } from '../file/file.entity';
 import { Comment } from '../comment/comment.entity';
@@ -8,45 +8,47 @@ export class Post {
     @PrimaryGeneratedColumn({ name: 'post_id', unsigned: true })
     postId: number;
 
-    @Column({ type: 'varchar', length: 45 })
+    @Column({ type: 'varchar', length: 45, name: 'post_title' })
     postTitle: string;
 
-    @Column({ type: 'text' })
+    @Column({ type: 'text', name: 'post_content' })
     postContent: string;
 
-    @Column({ type: 'int', unsigned: true, nullable: true })
+    @Column({ type: 'int', unsigned: true, name: 'file_id', nullable: true })
     fileId: number;
 
-    @Column({ type: 'int', unsigned: true })
+    @Column({ type: 'int', unsigned: true, name: 'user_id' })
     userId: number;
 
-    @Column({ type: 'varchar', length: 45 })
+    @Column({ type: 'varchar', length: 45, name: 'nickname' })
     nickname: string;
 
-    @Column({ type: 'int', unsigned: true, default: 0 })
+    @Column({ type: 'int', unsigned: true, name: 'like', default: 0 })
     like: number;
 
-    @Column({ type: 'int', unsigned: true, default: 0 })
+    @Column({ type: 'int', unsigned: true, name: 'comment_count', default: 0 })
     commentCount: number;
 
-    @Column({ type: 'int', unsigned: true, default: 0 })
+    @Column({ type: 'int', unsigned: true, name: 'hits', default: 0 })
     hits: number;
 
-    @Column({ type: 'timestamp', nullable: true, default: () => 'CURRENT_TIMESTAMP' })
+    @Column({ type: 'timestamp', name: 'created_at', nullable: true, default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;
 
-    @Column({ type: 'timestamp', nullable: true, default: () => 'CURRENT_TIMESTAMP' })
+    @Column({ type: 'timestamp', name: 'updated_at', nullable: true, default: () => 'CURRENT_TIMESTAMP' })
     updatedAt: Date;
 
-    @Column({ type: 'timestamp', nullable: true })
+    @Column({ type: 'timestamp', name: 'deleted_at', nullable: true })
     deletedAt: Date;
 
     @ManyToOne(() => User, user => user.posts)
+    @JoinColumn({ name: 'user_id' })
     user: User;
 
-    @OneToMany(() => File, file => file.post) // File 엔티티와의 관계 설정
+    @OneToMany(() => File, file => file.post)
     files: File[];
 
     @OneToMany(() => Comment, comment => comment.post)
     comments: Comment[];
 }
+

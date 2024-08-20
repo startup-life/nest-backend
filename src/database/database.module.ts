@@ -17,6 +17,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
                 entities: [__dirname + '/../**/*.entity{.ts,.js}'],
                 autoLoadEntities: true,
                 synchronize: true,
+                logging: configService.get<boolean>('DB_LOGGING'),
             }),
             inject: [ConfigService],
         }),

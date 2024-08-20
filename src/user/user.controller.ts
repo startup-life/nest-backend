@@ -3,9 +3,9 @@ import {
     Body,
     Controller,
     Delete,
-    Get,
+    Get, HttpCode,
     NotFoundException,
-    Param,
+    Param, ParseIntPipe,
     Patch,
     Put,
     Query
@@ -29,14 +29,12 @@ export class UserController {
 
     // 유저 정보 가져오기
     @Get(':user_id')
-    async getUser(@Param('user_id') userId: string) {
-        const parsedUserId = parseInt(userId, 10);
-
-        if (!parsedUserId) {
+    async getUser(@Param('user_id', ParseIntPipe) userId: number) {
+        if (!userId) {
             throw new BadRequestException('invalid userId');
         }
 
-        const user = await this.userService.getUser(parsedUserId);
+        const user = await this.userService.getUser(userId);
 
         if (!user) {
             throw new NotFoundException('not found user');
@@ -47,10 +45,8 @@ export class UserController {
 
     // 회원 정보 수정
     @Put(':user_id')
-    async updateUser(@Param('user_id') userId: string, @Body() nickname: string, @Body() profileImagePath: string) {
-        const parsedUserId = parseInt(userId, 10);
-
-        if (!parsedUserId) {
+    async updateUser(@Param('user_id', ParseIntPipe) userId: number, @Body() nickname: string, @Body() profileImagePath: string) {
+        if (!userId) {
             throw new BadRequestException('invalid userId');
         }
 
@@ -59,7 +55,7 @@ export class UserController {
         }
 
         const requestBody = {
-            parsedUserId,
+            userId,
             nickname,
             profileImagePath
         }
@@ -75,10 +71,8 @@ export class UserController {
 
     // 비밀번호 변경
     @Patch(':user_id/password')
-    async updatePassword(@Param('user_id') userId: string, @Body('password') password: string) {
-        const parsedUserId = parseInt(userId, 10);
-
-        if (!parsedUserId) {
+    async updatePassword(@Param('user_id', ParseIntPipe) userId: number, @Body('password') password: string) {
+        if (!userId) {
             throw new BadRequestException('invalid userId');
         }
 
@@ -87,7 +81,7 @@ export class UserController {
         }
 
         const requestBody = {
-            parsedUserId,
+            userId,
             password
         }
 
@@ -102,14 +96,13 @@ export class UserController {
 
     // 회원 탈퇴
     @Delete(':user_id')
-    async softDeleteUser(@Param('user_id') userId: string) {
-        const parsedUserId = parseInt(userId, 10);
-
-        if (!parsedUserId) {
+    @HttpCode(204)
+    async softDeleteUser(@Param('user_id', ParseIntPipe) userId: number) {
+        if (!userId) {
             throw new BadRequestException('invalid userId');
         }
 
-        const user = await this.userService.softDeleteUser(parsedUserId);
+        const user = await this.userService.softDeleteUser(userId);
 
         if (!user) {
             throw new NotFoundException('not found user');

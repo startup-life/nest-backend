@@ -57,10 +57,10 @@ export class UserService {
         return user;
     }
 
-    async updateUser(requestBody: {parsedUserId: number, nickname: string, profileImagePath: string}): Promise<User> {
-        const { parsedUserId, nickname, profileImagePath } = requestBody;
+    async updateUser(requestBody: {userId: number, nickname: string, profileImagePath: string}): Promise<User> {
+        const { userId, nickname, profileImagePath } = requestBody;
 
-        const user = await this.getUser(parsedUserId);
+        const user = await this.getUser(userId);
 
         if (!user) {
             return null;
@@ -80,21 +80,21 @@ export class UserService {
             // 프로필 이미지 삭제
             user.fileId = null;
             await this.userRepository.save(user);
-            return await this.getUser(parsedUserId);
+            return await this.getUser(userId);
 
         }
 
-        const profileImage = await this.fileService.createProfileImage(parsedUserId, profileImagePath);
+        const profileImage = await this.fileService.createProfileImage(userId, profileImagePath);
         user.fileId = profileImage.fileId;
         await this.userRepository.save(user);
 
-        return await this.getUser(parsedUserId);
+        return await this.getUser(userId);
     }
 
-    async updatePassword(requestBody: {parsedUserId: number, password: string}): Promise<User> {
-        const { parsedUserId, password } = requestBody;
+    async updatePassword(requestBody: {userId: number, password: string}): Promise<User> {
+        const { userId, password } = requestBody;
 
-        const user = await this.getUser(parsedUserId);
+        const user = await this.getUser(userId);
 
         if (!user) {
             return null;
@@ -119,5 +119,10 @@ export class UserService {
 
         delete user.password;
         return user;
+    }
+
+    async getNickname(userId: number): Promise<string> {
+        const user = await this.userRepository.findOne({where: {userId}});
+        return user.nickname;
     }
 }
