@@ -1,32 +1,46 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Post } from '../post/post.entity';
+import { File } from '../file/file.entity';
+import { Comment } from '../comment/comment.entity';
 
 @Entity('user_table')
 export class User {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn({ name: 'user_id', unsigned: true })
     userId: number;
 
-    @Column()
+    @Column({ type: 'varchar', length: 150 })
     email: string;
 
-    @Column()
+    @Column({ type: 'varchar', length: 150 })
     password: string;
 
-
-    @Column()
+    @Column({ type: 'varchar', length: 45 })
     nickname: string;
 
-    @Column({ nullable: true })
+    @Column({ type: 'int', unsigned: true, nullable: true })
     fileId: number;
 
-    @Column({ nullable: true })
-    profileImagePath: string;
+    @Column({ type: 'varchar', length: 150, nullable: true })
+    sessionId: string;
 
-    @Column()
+    @Column({ type: 'timestamp', nullable: true, default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;
 
-    @Column()
+    @Column({ type: 'timestamp', nullable: true, default: () => 'CURRENT_TIMESTAMP' })
     updatedAt: Date;
 
-    @Column({ nullable: true })
+    @Column({ type: 'timestamp', nullable: true })
     deletedAt: Date;
+
+    @OneToMany(() => Post, post => post.user)
+    posts: Post[];
+
+    @OneToMany(() => File, file => file.user)
+    files: File[];
+
+    @OneToMany(() => Comment, comment => comment.user)
+    comments: Comment[];
+
+    // 프로필 이미지 경로를 가상 속성으로 추가
+    profileImagePath?: string;
 }

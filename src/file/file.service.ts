@@ -10,14 +10,33 @@ export class FileService {
         private readonly fileRepository: Repository<File>,
     ) {}
 
-    async getProfileImagePath(fileId: number): Promise<string> {
+    async getProfileImagePath(userId: number, fileId: number): Promise<string> {
         const file = await this.fileRepository.findOne({
-            where: { id: fileId, deletedAt: null, fileCategory: 1 },
+            where: { userId, fileId, fileCategory: 0 },
         });
 
         if (file) {
             return file.filePath;
         }
         return '/public/image/profile/default.png';
+    }
+
+    async createProfileImage(userId: number, filePath: string): Promise<File> {
+        const file = new File();
+        file.userId = userId;
+        file.filePath = filePath;
+        file.fileCategory = 0;
+        console.log('in createProfileImage');
+        return await this.fileRepository.save(file);
+    }
+
+    async createPostImage(userId: number, postId: number, filePath: string): Promise<File> {
+        const file = new File();
+        file.userId = userId;
+        file.postId = postId;
+        file.filePath = filePath;
+        file.fileCategory = 1;
+
+        return await this.fileRepository.save(file);
     }
 }

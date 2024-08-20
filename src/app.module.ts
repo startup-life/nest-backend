@@ -13,13 +13,14 @@ import {ThrottlerGuard, ThrottlerModule} from "@nestjs/throttler";
 import {APP_GUARD} from "@nestjs/core";
 import { FileController } from './file/file.controller';
 import { AuthController } from './auth/auth.controller';
-import { AuthService } from './auth/auth.service';
-import { FileService } from './file/file.service';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { FileModule } from './file/file.module';
 import { PostModule } from './post/post.module';
 import { CommentModule } from './comment/comment.module';
+import { UploadController } from './upload/upload.controller';
+import { UploadService } from './upload/upload.service';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -36,14 +37,16 @@ import { CommentModule } from './comment/comment.module';
       FileModule,
       PostModule,
       CommentModule,
+      UploadModule,
   ],
-  controllers: [AppController, UserController, PostController, CommentController, FileController, AuthController],
+  controllers: [AppController, UserController, PostController, CommentController, FileController, AuthController, UploadController],
   providers: [
       AppService,
       {
           provide: APP_GUARD,
           useClass: ThrottlerGuard,
       },
+      UploadService,
   ],
 })
 export class AppModule {}

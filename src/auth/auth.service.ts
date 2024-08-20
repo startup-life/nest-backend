@@ -17,12 +17,25 @@ export class AuthService {
             return null;
         }
 
-        if (user.fileId) {
-            const profileImagePath = await this.fileService.getProfileImagePath(user.fileId);
-            await this.userService.updateProfileImage(user.userId, profileImagePath);
-            user.profileImagePath = profileImagePath;
-        } else {
-            user.profileImagePath = '/public/image/profile/default.png';
+        user.profileImagePath = await this.fileService.getProfileImagePath(user.userId, user.fileId);
+
+        // 비밀번호는 제거한 후 반환
+        delete user.password;
+
+        return user;
+    }
+
+    async signUpUser(email: string, password: string, nickname: string, profileImagePath:string): Promise<User | null> {
+        const isExistEmail = await this.userService.checkEmail(email);
+
+        if (isExistEmail) {
+            return null;
+        }
+
+        const user = await this.userService.createUser(email, password, nickname, profileImagePath);
+
+        if (!user) {
+            return null;
         }
 
         return user;
