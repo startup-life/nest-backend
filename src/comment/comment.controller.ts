@@ -1,40 +1,119 @@
-import {Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put} from '@nestjs/common';
+import {
+    BadRequestException,
+    Body,
+    Controller,
+    Delete,
+    Get,
+    NotFoundException,
+    Param,
+    ParseIntPipe,
+    Post,
+    Put, Query
+} from '@nestjs/common';
 import {CommentService} from "./comment.service";
 
 @Controller('comment')
 export class CommentController {
     constructor(private readonly commentService: CommentService) {}
 
-    @Get()
-    async getComments() {
-        const comments = await this.commentService.getComments();
-        return comments;
+    @Get('post/:post_id')
+    async getAllComments(@Param('post_id', ParseIntPipe) postId: number): Promise<any[]> {
+        if (!postId) {
+            throw new BadRequestException('invalid postId');
+        }
+
+        return await this.commentService.getComments(postId);
     }
 
-    @Get(':comment_id')
-    async getComment(@Param('comment_id', ParseIntPipe) commentId: number) {
-        const comment = await this.commentService.getCommentById(commentId);
-        return comment;
+    @Post('post/:post_id')
+    async addComment(
+        @Param('post_id', ParseIntPipe) postId: number,
+        @Query('userid', ParseIntPipe) userId: number,
+        @Body('commentContent') commentContent: string,
+    ): Promise<any> {
+        if (!postId) {
+            throw new BadRequestException('invalid postId');
+        }
+
+        if (!userId) {
+            throw new BadRequestException('invalid userId');
+        }
+
+        if (!commentContent) {
+            throw new BadRequestException('invalid commentContent');
+        }
+
+        if (commentContent.length > 1000) {
+            throw new BadRequestException('commentContent is too long');
+        }
+
+        const requestBody = {
+            postId,
+            userId,
+            commentContent,
+        };
+
+        return await this.commentService.addComment(requestBody);
     }
 
-    @Post()
-    async addComment(@Body() body: { postId: number; commentContent: string }) {
-        const newComment = await this.commentService.addComment(body.postId, body.commentContent);
-        return newComment;
-    }
-
-    @Put(':comment_id')
+    @Put('post/:post_id/:comment_id')
     async updateComment(
+        @Param('post_id', ParseIntPipe) postId: number,
         @Param('comment_id', ParseIntPipe) commentId: number,
-        @Body() body: { commentContent: string },
-    ) {
-        const updateComment = await this.commentService.updateComment(commentId, body.commentContent);
-        return updateComment;
+        @Query('userid', ParseIntPipe) userId: number,
+        @Body('commentContent') commentContent: string,
+    ): Promise<any> {
+        if (!postId) {
+            throw new BadRequestException('invalid postId');
+        }
+
+        if (!commentId) {
+            throw new BadRequestException('invalid commentId');
+        }
+
+        if (!commentContent) {
+            throw new BadRequestException('invalid commentContent');
+        }
+
+        if (commentContent.length > 1000) {
+            throw new BadRequestException('commentContent is too long');
+        }
+
+        const requestBody = {
+            postId,
+            userId,
+            commentId,
+            commentContent,
+        };
+
+        return await this.commentService.updateComment(requestBody);
+
     }
 
-    @Delete(':comment_id')
-    async deleteComment(@Param('comment_id', ParseIntPipe) commentId: number) {
-        await this.commentService.deleteComment(commentId);
-        return null; // DELETE 요청이므로 성공 시 본문이 없음을 의미하는 null 반환
+    @Delete('post/:post_id/:comment_id')
+    async deleteComment(
+        @Param('post_id', ParseIntPipe) postId: number,
+        @Param('comment_id', ParseIntPipe) commentId: number,
+        @Query('userid', ParseIntPipe) userId: number,
+    ): Promise<any> {
+        if (!postId) {
+            throw new BadRequestException('invalid postId');
+        }
+
+        if (!commentId) {
+            throw new BadRequestException('invalid commentId');
+        }
+
+        if (!userId) {
+            throw new BadRequestException('invalid userId');
+        }
+
+        const requestBody = {
+            postId,
+            userId,
+            commentId,
+        };
+
+        return await this.commentService.softDeleteComment(requestBody);
     }
 }

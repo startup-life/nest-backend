@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import {Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne, JoinColumn} from 'typeorm';
 import { Post } from '../post/post.entity';
 import { File } from '../file/file.entity';
 import { Comment } from '../comment/comment.entity';
@@ -35,8 +35,9 @@ export class User {
     @OneToMany(() => Post, post => post.user)
     posts: Post[];
 
-    @OneToMany(() => File, file => file.user)
-    files: File[];
+    @OneToOne(() => File)
+    @JoinColumn({ name: 'file_id' })
+    files: File;
 
     @OneToMany(() => Comment, comment => comment.user)
     comments: Comment[];
