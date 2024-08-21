@@ -30,4 +30,13 @@ export class AppController {
   deleteRequest(): null {
     return null;
   }
+
+  @Get('timeout')
+  timeoutRequest(): Promise<string> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+          resolve('10초 뒤에 응답합니다.');
+      }, 10000);
+    });
+  }
 }
