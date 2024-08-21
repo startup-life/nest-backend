@@ -2,5 +2,4 @@ import {Body, Controller, Delete, Get, HttpCode, Patch, Post, Put} from '@nestjs
 import { AppService } from './app.service';
 
 @Controller()
-export class AppController {
-}
+export class AppController {}

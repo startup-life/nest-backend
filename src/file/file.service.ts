@@ -26,7 +26,6 @@ export class FileService {
         file.userId = userId;
         file.filePath = filePath;
         file.fileCategory = 0;
-        console.log('in createProfileImage');
         return await this.fileRepository.save(file);
     }
 

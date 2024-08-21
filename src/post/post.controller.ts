@@ -73,9 +73,6 @@ export class PostController {
             throw new BadRequestException('postContent must be less than 1500 characters');
         }
 
-        console.log('postTitle', postTitle);
-        console.log('postContent', postContent);
-
         const requestBody = {
             userId,
             postTitle,

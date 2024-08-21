@@ -2,9 +2,9 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
-import {ConfigService} from "@nestjs/config";
-import * as helmet from 'helmet';
 import {TimeoutInterceptor} from "./common/interceptor/timeout.interceptor";
+import helmet from 'helmet';
+import {ConfigService} from "@nestjs/config";
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -18,7 +18,6 @@ async function bootstrap() {
 
   app.useStaticAssets(join(__dirname, '..', 'public'));
 
-  // @ts-ignore
   app.use(helmet());
 
   // 글로벌 Interceptor 설정
