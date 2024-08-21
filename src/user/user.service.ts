@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import {Injectable, NotFoundException} from '@nestjs/common';
 import {User} from "./user.entity";
 import {Repository} from "typeorm";
 import {InjectRepository} from "@nestjs/typeorm";
@@ -46,8 +46,12 @@ export class UserService {
         return !!user;
     }
 
-    async getUser(userId: number): Promise<User> {
+    async getUserById(userId: number): Promise<any> {
         const user = await this.userRepository.findOne({where: {userId}});
+
+        if (!user) {
+            throw new NotFoundException('not found user');
+        }
 
         if (user.fileId) {
             user.profileImagePath = await this.fileService.getProfileImagePath(userId, user.fileId);
@@ -60,10 +64,10 @@ export class UserService {
     async updateUser(requestBody: {userId: number, nickname: string, profileImagePath: string}): Promise<User> {
         const { userId, nickname, profileImagePath } = requestBody;
 
-        const user = await this.getUser(userId);
+        const user = await this.getUserById(userId);
 
         if (!user) {
-            return null;
+            throw new NotFoundException('not found user');
         }
 
         user.nickname = nickname;
@@ -80,24 +84,23 @@ export class UserService {
             // 프로필 이미지 삭제
             user.fileId = null;
             await this.userRepository.save(user);
-            return await this.getUser(userId);
-
+            return await this.getUserById(userId);
         }
 
         const profileImage = await this.fileService.createProfileImage(userId, profileImagePath);
         user.fileId = profileImage.fileId;
         await this.userRepository.save(user);
 
-        return await this.getUser(userId);
+        return await this.getUserById(userId);
     }
 
     async updatePassword(requestBody: {userId: number, password: string}): Promise<User> {
         const { userId, password } = requestBody;
 
-        const user = await this.getUser(userId);
+        const user = await this.getUserById(userId);
 
         if (!user) {
-            return null;
+            throw new NotFoundException('not found user');
         }
 
         user.password = password;
@@ -108,10 +111,10 @@ export class UserService {
     }
 
     async softDeleteUser(userId: number): Promise<User> {
-        const user = await this.getUser(userId);
+        const user = await this.getUserById(userId);
 
         if (!user) {
-            return null;
+            throw new NotFoundException('not found user');
         }
 
         user.deletedAt = new Date();
@@ -123,6 +126,11 @@ export class UserService {
 
     async getNickname(userId: number): Promise<string> {
         const user = await this.userRepository.findOne({where: {userId}});
+
+        if (!user) {
+            throw new NotFoundException('not found user');
+        }
+
         return user.nickname;
     }
 }

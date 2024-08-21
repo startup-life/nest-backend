@@ -3,9 +3,10 @@ import {
     Body,
     Controller,
     Delete,
-    Get, HttpCode,
-    NotFoundException,
-    Param, ParseIntPipe,
+    Get,
+    HttpCode,
+    Param,
+    ParseIntPipe,
     Patch,
     Put,
     Query
@@ -29,23 +30,21 @@ export class UserController {
 
     // 유저 정보 가져오기
     @Get(':user_id')
-    async getUser(@Param('user_id', ParseIntPipe) userId: number) {
+    async getUserById(@Param('user_id', ParseIntPipe) userId: number) {
         if (!userId) {
             throw new BadRequestException('invalid userId');
         }
 
-        const user = await this.userService.getUser(userId);
-
-        if (!user) {
-            throw new NotFoundException('not found user');
-        }
-
-        return user;
+        return await this.userService.getUserById(userId);
     }
 
     // 회원 정보 수정
     @Put(':user_id')
-    async updateUser(@Param('user_id', ParseIntPipe) userId: number, @Body() nickname: string, @Body() profileImagePath: string) {
+    async updateUser(
+        @Param('user_id', ParseIntPipe) userId: number,
+        @Body('nickname') nickname: string,
+        @Body('profileImagePath') profileImagePath?: string,
+    ) {
         if (!userId) {
             throw new BadRequestException('invalid userId');
         }
@@ -60,13 +59,7 @@ export class UserController {
             profileImagePath
         }
 
-        const user = await this.userService.updateUser(requestBody);
-
-        if (!user) {
-            throw new NotFoundException('not found user');
-        }
-
-        return user;
+        return await this.userService.updateUser(requestBody);
     }
 
     // 비밀번호 변경
@@ -85,13 +78,7 @@ export class UserController {
             password
         }
 
-        const user = await this.userService.updatePassword(requestBody);
-
-        if (!user) {
-            throw new NotFoundException('not found user');
-        }
-
-        return user;
+        return await this.userService.updatePassword(requestBody);
     }
 
     // 회원 탈퇴
@@ -102,13 +89,7 @@ export class UserController {
             throw new BadRequestException('invalid userId');
         }
 
-        const user = await this.userService.softDeleteUser(userId);
-
-        if (!user) {
-            throw new NotFoundException('not found user');
-        }
-
-        return user;
+        return await this.userService.softDeleteUser(userId);
     }
 
     // 이메일 중복 체크

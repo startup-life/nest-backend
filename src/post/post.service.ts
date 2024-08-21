@@ -1,4 +1,4 @@
-import {Injectable, NotFoundException} from '@nestjs/common';
+import {Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException} from '@nestjs/common';
 import {UserService} from "../user/user.service";
 import {Repository} from "typeorm";
 import {Post} from "./post.entity";
@@ -50,6 +50,8 @@ export class PostService {
             console.log(post.user.files);
             console.log(post.files);
         });*/
+
+        if (!posts) return [];
 
         return posts.map(post => ({
             postId: post.postId, // 게시글 ID
@@ -128,7 +130,7 @@ export class PostService {
         const writerNickname = await this.userService.getNickname(userId);
 
         if (!writerNickname) {
-            throw new NotFoundException('User not found');
+            throw new UnauthorizedException('Invalid user');
         }
 
         // 새 Post 객체를 생성합니다.
@@ -142,6 +144,10 @@ export class PostService {
         // 새 Post를 먼저 저장하여 postId를 생성합니다.
         newPost = await this.postRepository.save(newPost);
 
+        if (!newPost) {
+            throw new InternalServerErrorException('Failed create post');
+        }
+
         // 파일이 있는 경우 fileId를 설정하고 다시 저장합니다.
         if (attachFilePath) {
             const postFile = await this.fileService.createPostImage(userId, newPost.postId, attachFilePath);
@@ -154,16 +160,22 @@ export class PostService {
 
     async updatePost(
         requestBody: {
+            userId: number;
             postId: number;
             postTitle: string;
             postContent: string;
             attachFilePath?: string
         }): Promise<any> {
-        const { postId, postTitle, postContent, attachFilePath } = requestBody;
+        const { userId, postId, postTitle, postContent, attachFilePath } = requestBody;
         const post = await this.getPostById(postId);
 
         if (!post) {
             throw new NotFoundException('Post not found');
+        }
+
+        const checkWriter = post.userId === userId;
+        if (!checkWriter) {
+            throw new NotFoundException('Invalid user');
         }
 
         post.postTitle = postTitle;
@@ -189,11 +201,23 @@ export class PostService {
         return await this.getPostById(postId);
     }
 
-    async softDeletePost(postId: number): Promise<any> {
+    async softDeletePost(
+        requestBody:{
+            userId: number,
+            postId: number
+        }
+    ): Promise<any> {
+        const { userId, postId } = requestBody;
+
         const post = await this.getPostById(postId);
 
         if (!post) {
             throw new NotFoundException('Post not found');
+        }
+
+        const checkWriter = post.userId === userId;
+        if (!checkWriter) {
+            throw new NotFoundException('Invalid user');
         }
 
         post.deletedAt = new Date();

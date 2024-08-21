@@ -21,7 +21,7 @@ export class CommentService {
         private readonly userService: UserService,
     ) {}
 
-    async getComments(postId: number): Promise<any> {
+    async getAllComments(postId: number): Promise<any> {
         const comments = await this.commentRepository
             .createQueryBuilder('ct')
             .leftJoinAndSelect('ct.user', 'ut')
@@ -62,6 +62,9 @@ export class CommentService {
         const { postId, userId, commentContent } = requestBody;
 
         const writerNickname = await this.userService.getNickname(userId);
+        if (!writerNickname) {
+            throw new UnauthorizedException('invalid user');
+        }
 
         const post = await this.postRepository.findOne({where: { postId }});
         if (!post) {

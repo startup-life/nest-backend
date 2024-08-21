@@ -24,13 +24,7 @@ export class AuthController {
             throw new BadRequestException('비밀번호를 입력해주세요.');
         }
 
-        const user = await this.authService.loginUser(email, password);
-
-        if (!user) {
-            throw new UnauthorizedException('이메일 또는 비밀번호가 잘못되었습니다.');
-        }
-
-        return user;
+        return await this.authService.loginUser(email, password);
     }
 
     // 회원가입
@@ -39,7 +33,7 @@ export class AuthController {
         @Body('email') email: string,
         @Body('password') password: string,
         @Body('nickname') nickname: string,
-        @Body('profileImagePath') profileImagePath: string
+        @Body('profileImagePath') profileImagePath?: string
     ) {
         if (!profileImagePath) {
             profileImagePath = null;
@@ -57,12 +51,13 @@ export class AuthController {
             throw new BadRequestException('이름을 입력해주세요.');
         }
 
-        const user = await this.authService.signUpUser(email, password, nickname, profileImagePath);
-
-        if (!user) {
-            throw new UnauthorizedException('회원가입에 실패했습니다.');
+        const requestBody = {
+            email,
+            password,
+            nickname,
+            profileImagePath,
         }
 
-        return user;
+        return await this.authService.signUpUser(requestBody);
     }
 }

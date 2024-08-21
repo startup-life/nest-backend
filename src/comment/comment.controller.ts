@@ -22,7 +22,7 @@ export class CommentController {
             throw new BadRequestException('invalid postId');
         }
 
-        return await this.commentService.getComments(postId);
+        return await this.commentService.getAllComments(postId);
     }
 
     @Post('post/:post_id')

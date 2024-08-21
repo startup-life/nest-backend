@@ -9,9 +9,9 @@ import {
     ParseIntPipe,
     Post,
     Put,
-    Query
+    Query, UnauthorizedException
 } from '@nestjs/common';
-import { PostService } from './post.service';
+import {PostService} from './post.service';
 
 @Controller('post')
 export class PostController {
@@ -27,8 +27,7 @@ export class PostController {
 
     @Get()
     async getAllPosts(): Promise<any[]> {
-        const posts = await this.postService.getAllPosts();
-        return posts;
+        return await this.postService.getAllPosts();
     }
 
     @Get(':post_id')
@@ -37,18 +36,12 @@ export class PostController {
             throw new BadRequestException('invalid postId');
         }
 
-        const post = await this.postService.getPostById(postId);
-
-        if (!post) {
-            throw new BadRequestException('not found post');
-        }
-
-        return post;
+        return await this.postService.getPostById(postId);
     }
 
     @Post()
     async addPost(
-        @Query('userid') userId: number,
+        @Query('userid', ParseIntPipe) userId: number,
         @Body('postTitle') postTitle: string,
         @Body('postContent') postContent: string,
         @Body('attachFilePath') attachFilePath?: string,
@@ -79,18 +72,22 @@ export class PostController {
             postContent,
             attachFilePath,
         };
-        const post = await this.postService.addPost(requestBody);
 
-        return post;
+        return await this.postService.addPost(requestBody);
     }
 
     @Put(':post_id')
     async updatePost(
+        @Query('userid', ParseIntPipe) userId: number,
         @Param('post_id', ParseIntPipe) postId: number,
         @Body('postTitle') postTitle: string,
         @Body('postContent') postContent: string,
         @Body('attachFilePath') attachFilePath?: string,
     ): Promise<any> {
+        if (!userId) {
+            throw new BadRequestException('invalid userId');
+        }
+
         if (!postId) {
             throw new BadRequestException('invalid postId');
         }
@@ -112,29 +109,35 @@ export class PostController {
         }
 
         const requestBody = {
+            userId,
             postId,
             postTitle,
             postContent,
             attachFilePath,
         }
 
-        const post = await this.postService.updatePost(requestBody);
-
-        if (!post) {
-            throw new NotFoundException('not found post');
-        }
-
-        return post;
+        return await this.postService.updatePost(requestBody);
     }
 
     @Delete(':post_id')
     @HttpCode(204)
-    async deletePost(@Param('post_id', ParseIntPipe) postId: number): Promise<any> {
+    async deletePost(
+        @Query('userid', ParseIntPipe) userId: number,
+        @Param('post_id', ParseIntPipe) postId: number,
+    ): Promise<any> {
+        if (!userId) {
+            throw new BadRequestException('invalid userId');
+        }
+
         if (!postId) {
             throw new BadRequestException('invalid postId');
         }
 
-        const post = await this.postService.softDeletePost(postId);
-        return post;
+        const requestBody = {
+            userId,
+            postId,
+        }
+
+        return await this.postService.softDeletePost(requestBody);
     }
 }
