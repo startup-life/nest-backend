@@ -20,11 +20,11 @@ export class CommentService {
         },
     ];
 
-    async getComments() {
+    async getComments(): Promise<any[]> {
         return this.comments;
     }
 
-    async getCommentById(commentId: number) {
+    async getCommentById(commentId: number): Promise<any> {
         const comment = this.comments.find(comment => comment.commentId === commentId);
         if (!comment) {
             throw new NotFoundException('Comment not found');
@@ -32,7 +32,7 @@ export class CommentService {
         return comment;
     }
 
-    async addComment(postId: number, commentContent: string) {
+    async addComment(postId: number, commentContent: string): Promise<any> {
         const newComment = {
             commentId: this.comments.length + 1,
             postId,
@@ -42,13 +42,13 @@ export class CommentService {
         return newComment;
     }
 
-    async updateComment(commentId: number, commentContent: string) {
+    async updateComment(commentId: number, commentContent: string): Promise<any> {
         const comment = await this.getCommentById(commentId);
         comment.commentContent = commentContent;
         return comment;
     }
 
-    async deleteComment(commentId: number) {
+    async deleteComment(commentId: number): Promise<void> {
         const commentIndex = this.comments.findIndex(comment => comment.commentId === commentId);
         if (commentIndex === -1) {
             throw new NotFoundException('Comment not found');

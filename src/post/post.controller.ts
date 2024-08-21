@@ -6,35 +6,30 @@ export class PostController {
     constructor(private readonly postService: PostService) {}
 
     @Get()
-    async getPosts() {
-        const posts = await this.postService.getAllPosts();
-        return posts;
+    async getPosts(): Promise<any[]> {
+        return await this.postService.getAllPosts();
     }
 
     @Get(':post_id')
-    async getPost(@Param('post_id', ParseIntPipe) postId: number) {
-        const post = await this.postService.getPostById(postId);
-        return post;
+    async getPost(@Param('post_id', ParseIntPipe) postId: number): Promise<any> {
+        return await this.postService.getPostById(postId);
     }
 
     @Post()
-    async addPost(@Body() body: { postTitle: string; postContent: string }) {
-        const newPost = await this.postService.addPost(body.postTitle, body.postContent);
-        return newPost;
+    async addPost(@Body() body: { postTitle: string; postContent: string }): Promise<any> {
+        return await this.postService.addPost(body.postTitle, body.postContent);
     }
 
     @Put(':post_id')
     async updateUser(
         @Param('post_id', ParseIntPipe) postId: number,
         @Body() body: { postTitle: string; postContent: string },
-    ) {
-        const updatePost = await this.postService.updatePost(postId, body.postTitle, body.postContent);
-        return updatePost;
+    ): Promise<any> {
+        return await this.postService.updatePost(postId, body.postTitle, body.postContent);
     }
 
     @Delete(':post_id')
-    async deleteUser(@Param('post_id', ParseIntPipe) postId: number) {
-        await this.postService.deletePost(postId);
-        return null; // DELETE 요청이므로 성공 시 본문이 없음을 의미하는 null 반환
+    async deleteUser(@Param('post_id', ParseIntPipe) postId: number): Promise<void> {
+        return await this.postService.deletePost(postId);
     }
 }
