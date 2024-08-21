@@ -8,11 +8,11 @@ export class UserService {
         { userId: 3, name: 'Bob', email: 'bob@example.com' },
     ];
 
-    async getAllUsers() {
+    async getAllUsers(): Promise<any[]> {
         return this.users;
     }
 
-    async getUserById(userId: number) {
+    async getUserById(userId: number): Promise<any> {
         const user = this.users.find(user => user.userId === userId);
         if (!user) {
             throw new NotFoundException('User not found');
@@ -20,7 +20,7 @@ export class UserService {
         return user;
     }
 
-    async addUser(name: string, email: string) {
+    async addUser(name: string, email: string): Promise<any> {
         const newUser = {
             userId: this.users.length + 1,
             name,
@@ -30,14 +30,14 @@ export class UserService {
         return newUser;
     }
 
-    async updateUser(userId: number, name: string, email: string) {
+    async updateUser(userId: number, name: string, email: string): Promise<any> {
         const user = await this.getUserById(userId);
         user.name = name;
         user.email = email;
         return user;
     }
 
-    async deleteUser(userId: number) {
+    async deleteUser(userId: number): Promise<void> {
         const userIndex = this.users.findIndex(user => user.userId === userId);
         if (userIndex === -1) {
             throw new NotFoundException('User not found');
