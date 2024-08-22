@@ -1,4 +1,4 @@
-import {Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne, JoinColumn} from 'typeorm';
+import {Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne, JoinColumn, DeleteDateColumn} from 'typeorm';
 import { Post } from '../post/post.entity';
 import { File } from '../file/file.entity';
 import { Comment } from '../comment/comment.entity';
@@ -29,7 +29,7 @@ export class User {
     @Column({ type: 'timestamp', name: 'updated_at', nullable: true, default: () => 'CURRENT_TIMESTAMP' })
     updatedAt: Date;
 
-    @Column({ type: 'timestamp', name: 'deleted_at', nullable: true })
+    @DeleteDateColumn({ type: 'timestamp', name: 'deleted_at', nullable: true })
     deletedAt: Date;
 
     @OneToMany(() => Post, post => post.user)

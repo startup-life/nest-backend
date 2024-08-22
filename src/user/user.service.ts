@@ -3,6 +3,11 @@ import {User} from "./user.entity";
 import {Repository} from "typeorm";
 import {InjectRepository} from "@nestjs/typeorm";
 import {FileService} from "../file/file.service";
+import {UpdateUserDto} from "./dto/update-user.dto";
+import {UpdatePasswordDto} from "./dto/update-password.dto";
+import {CreateUserDto} from "./dto/create-user.dto";
+import {GetProfileImagePathDto} from "../file/dto/get-profile-image-path.dto";
+import {CreateProfileImageDto} from "../file/dto/create-profile-image.dto";
 
 @Injectable()
 export class UserService {
@@ -12,40 +17,50 @@ export class UserService {
         private readonly fileService: FileService,
     ) {}
 
+    /**
+     * 이메일 대치 조회
+     * 계정 정보 생성
+     * 유저 정보 가져오기
+     * 회원 정보 수정
+     * 비밀번호 변경
+     * 회원 탈퇴
+     * 이메일 중복 체크
+     * 닉네임 중복 체크
+     */
+
+    // 이메일 대치 조회
     async findByEmail(email: string): Promise<User | undefined> {
         return await this.userRepository.findOne({
             where: { email, deletedAt: null },
+            withDeleted: false,
             select: ['userId', 'email', 'password', 'nickname', 'fileId', 'createdAt', 'updatedAt', 'deletedAt'], // 비밀번호 포함
         });
     }
 
-    async createUser(email: string, password: string, nickname: string, profileImagePath: string): Promise<User> {
+    // 계정 정보 생성
+    async createUser(createUserDto: CreateUserDto): Promise<User> {
+        const { email, password, nickname, profileImagePath } = createUserDto;
+
+        // 계정 정보 생성 및 저장
         const user = new User();
         user.email = email;
         user.password = password;
         user.nickname = nickname;
         await this.userRepository.save(user);
 
+        // 프로필 이미지 경로가 있는 경우
         if (profileImagePath) {
-            const profileImage = await this.fileService.createProfileImage(user.userId, profileImagePath);
+            const profileImage = await this.createProfileImage(user.userId, profileImagePath);
             user.fileId = profileImage.fileId;
             await this.userRepository.save(user);
         }
 
+        // 비밀번호 제거한 후 반환
         delete user.password;
         return user;
     }
 
-    async checkEmail(email: string): Promise<boolean> {
-        const user = await this.userRepository.findOne({ where: { email } });
-        return !!user;
-    }
-
-    async checkNickname(nickname: string): Promise<boolean> {
-        const user = await this.userRepository.findOne({ where: { nickname } });
-        return !!user;
-    }
-
+    // 유저 정보 가져오기
     async getUserById(userId: number): Promise<any> {
         const user = await this.userRepository.findOne({where: {userId}});
 
@@ -53,95 +68,94 @@ export class UserService {
             throw new NotFoundException('not found user');
         }
 
-        if (user.fileId) {
-            user.profileImagePath = await this.fileService.getProfileImagePath(userId, user.fileId);
-        }
+        if (user.fileId) user.profileImagePath = await this.getProfileImagePath(userId, user.fileId);
+        else user.profileImagePath = '/public/image/profile/default.png';
 
         delete user.password;
         return user;
     }
 
-    async updateUser(
-        requestBody: {
-            userId: number,
-            nickname: string,
-            profileImagePath?: string
-        }
-    ): Promise<User> {
-        const { userId, nickname, profileImagePath } = requestBody;
+    // 회원 정보 수정
+    async updateUser(userId: number, updateUserDto: UpdateUserDto): Promise<User> {
+        const { nickname, profileImagePath } = updateUserDto;
 
+        // 유저 정보 조회
         const user = await this.getUserById(userId);
 
-        if (!user) {
-            throw new NotFoundException('not found user');
-        }
-
-        user.nickname = nickname;
+        const savedUser = await this.userRepository.update(userId, { nickname });
+        if (!savedUser) throw new NotFoundException('not found user');
 
         // 프로필 이미지 경로가 없는 경우
-        if (profileImagePath === user.profileImagePath) {
-            // 기존 유저 정보 저장
-            const savedUser = await this.userRepository.save(user);
-            delete savedUser.password;  // 패스워드 제거
-            return savedUser;
-        }
-
         if (!profileImagePath) {
             // 프로필 이미지 삭제
-            user.fileId = null;
-            await this.userRepository.save(user);
+            await this.userRepository.update(userId, { fileId: null });
             return await this.getUserById(userId);
         }
 
-        const profileImage = await this.fileService.createProfileImage(userId, profileImagePath);
+        // 기존 프로필 이미지 경로와 같은 경우
+        if (profileImagePath === user.profileImagePath) return await this.getUserById(userId);
+
+        // 새로운 프로필 이미지 경로 저장
+        const profileImage = await this.createProfileImage(user.userId, profileImagePath);
         user.fileId = profileImage.fileId;
         await this.userRepository.save(user);
 
         return await this.getUserById(userId);
     }
 
-    async updatePassword(
-        requestBody: {
-            userId: number,
-            password: string
-        }
-    ): Promise<User> {
-        const { userId, password } = requestBody;
+    // 비밀번호 변경
+    async updatePassword(userId: number, updatePasswordDto: UpdatePasswordDto): Promise<any> {
+        const { password } = updatePasswordDto;
 
-        const user = await this.getUserById(userId);
+        // 비밀번호 변경
+        const changePass = await this.userRepository.update(userId, { password });
+        if (!changePass) throw new NotFoundException('not found user');
 
-        if (!user) {
-            throw new NotFoundException('not found user');
-        }
-
-        user.password = password;
-        await this.userRepository.save(user);
-
-        delete user.password;
-        return user;
+        return await this.getUserById(userId);
     }
 
-    async softDeleteUser(userId: number): Promise<User> {
-        const user = await this.getUserById(userId);
+    // 회원 탈퇴
+    async softDeleteUser(userId: number): Promise<any> {
+        const deleteUser = await this.userRepository.softDelete(userId);
+        if (!deleteUser) throw new NotFoundException('not found user');
 
-        if (!user) {
-            throw new NotFoundException('not found user');
-        }
-
-        user.deletedAt = new Date();
-        await this.userRepository.save(user);
-
-        delete user.password;
-        return user;
+        return deleteUser;
     }
 
-    async getNickname(userId: number): Promise<string> {
-        const user = await this.userRepository.findOne({where: {userId}});
+    // 이메일 중복 체크
+    async checkEmail(email: string): Promise<boolean> {
+        const user = await this.userRepository.findOne({
+            where: { email },
+            withDeleted: false,
+        });
+        return !!user;
+    }
 
-        if (!user) {
-            throw new NotFoundException('not found user');
-        }
+    // 닉네임 중복 체크
+    async checkNickname(nickname: string): Promise<boolean> {
+        const user = await this.userRepository.findOne({
+            where: { nickname },
+            withDeleted: false,
+        });
+        return !!user;
+    }
 
-        return user.nickname;
+    // private method
+
+    private async getProfileImagePath(userId: number, fileId: number): Promise<any> {
+        const getProfileImagePathDto: GetProfileImagePathDto = {
+            userId,
+            fileId,
+        };
+        return await this.fileService.getProfileImagePath(getProfileImagePathDto);
+    }
+
+    private async createProfileImage(userId: number, filePath: string): Promise<any> {
+        const createProfileImageDto: CreateProfileImageDto = {
+            userId,
+            filePath,
+        };
+        return await this.fileService.createProfileImage(createProfileImageDto);
     }
 }
+

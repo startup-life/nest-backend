@@ -31,9 +31,7 @@ export class UserController {
     // 유저 정보 가져오기
     @Get(':user_id')
     async getUserById(@Param('user_id', ParseIntPipe) userId: number) {
-        if (!userId) {
-            throw new BadRequestException('invalid userId');
-        }
+        if (!userId) throw new BadRequestException('invalid userId');
 
         return await this.userService.getUserById(userId);
     }
@@ -44,16 +42,9 @@ export class UserController {
         @Param('user_id', ParseIntPipe) userId: number,
         @Body() updateUserDto: UpdateUserDto,
     ) {
-        if (!userId) {
-            throw new BadRequestException('invalid userId');
-        }
+        if (!userId) throw new BadRequestException('invalid userId');
 
-        const requestBody = {
-            userId,
-            ...updateUserDto,
-        }
-
-        return await this.userService.updateUser(requestBody);
+        return await this.userService.updateUser(userId, updateUserDto);
     }
 
     // 비밀번호 변경
@@ -62,25 +53,16 @@ export class UserController {
         @Param('user_id', ParseIntPipe) userId: number,
         @Body() updatePasswordDto: UpdatePasswordDto,
     ) {
-        if (!userId) {
-            throw new BadRequestException('invalid userId');
-        }
+        if (!userId) throw new BadRequestException('invalid userId');
 
-        const requestBody = {
-            userId,
-            ...updatePasswordDto,
-        }
-
-        return await this.userService.updatePassword(requestBody);
+        return await this.userService.updatePassword(userId, updatePasswordDto);
     }
 
     // 회원 탈퇴
     @Delete(':user_id')
     @HttpCode(204)
     async softDeleteUser(@Param('user_id', ParseIntPipe) userId: number) {
-        if (!userId) {
-            throw new BadRequestException('invalid userId');
-        }
+        if (!userId) throw new BadRequestException('invalid userId');
 
         return await this.userService.softDeleteUser(userId);
     }
@@ -88,9 +70,7 @@ export class UserController {
     // 이메일 중복 체크
     @Get('check/email')
     async checkEmail(@Query('email') email: string) {
-        if (!email) {
-            throw new BadRequestException('email is required');
-        }
+        if (!email) throw new BadRequestException('email is required');
 
         return await this.userService.checkEmail(email);
     }
@@ -98,9 +78,7 @@ export class UserController {
     // 닉네임 중복 체크
     @Get('check/nickname')
     async checkNickname(@Query('nickname') nickname: string) {
-        if (!nickname) {
-            throw new BadRequestException('nickname is required');
-        }
+        if (!nickname) throw new BadRequestException('nickname is required');
 
         return await this.userService.checkNickname(nickname);
     }
