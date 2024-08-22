@@ -1,6 +1,5 @@
-import {Controller, Post, Body, BadRequestException, UnauthorizedException, Get, Query} from '@nestjs/common';
+import {Controller, Post, Body} from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ValidationUtil } from '../common/util/validation.util';
 import {LoginUserDto} from "./dto/login-user.dto";
 import {SignUpUserDto} from "./dto/sign-up-user.dto";
 
