@@ -43,6 +43,7 @@ export class User {
     comments: Comment[];
 
     profileImagePath?: string;
+    accessToken?: string;
 }
 
 /*

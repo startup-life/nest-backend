@@ -11,6 +11,7 @@ import {LoginUserDto} from "./dto/login-user.dto";
 import {SignUpUserDto} from "./dto/sign-up-user.dto";
 import {CreateUserDto} from "../user/dto/create-user.dto";
 import {GetProfileImagePathDto} from "../file/dto/get-profile-image-path.dto";
+import {JwtService} from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 
 const SALT_ROUNDS = 10;
@@ -20,6 +21,7 @@ export class AuthService {
     constructor(
         private readonly userService: UserService,
         private readonly fileService: FileService,
+        private readonly jwtService: JwtService,
     ) {}
 
     /**
@@ -38,9 +40,12 @@ export class AuthService {
         const validPassword = await bcrypt.compare(password, user.password);
         if (!user || !validPassword) throw new UnauthorizedException('invalid email or password');
 
-
         // 프로필 이미지 경로 매핑
         user.profileImagePath = await this.getProfileImagePath(user.userId, user.fileId);
+
+        // JWT 토큰 생성
+        const payload = { userId: user.userId, email: user.email, nickname: user.nickname };
+        user.accessToken = this.jwtService.sign(payload);
 
         // 비밀번호 제거한 후 반환
         delete user.password;

@@ -9,11 +9,14 @@ import {
     ParseIntPipe,
     Patch,
     Put,
-    Query
+    Query,
+    UseGuards,
 } from '@nestjs/common';
 import {UserService} from './user.service';
 import {UpdateUserDto} from "./dto/update-user.dto";
 import {UpdatePasswordDto} from "./dto/update-password.dto";
+import {AuthGuard} from "@nestjs/passport";
+import {UserMatchGuard} from "../common/guard/user-match.guard";
 
 @Controller('user')
 export class UserController {
@@ -30,6 +33,7 @@ export class UserController {
 
     // 유저 정보 가져오기
     @Get(':user_id')
+    @UseGuards(AuthGuard('jwt'))
     async getUserById(@Param('user_id', ParseIntPipe) userId: number) {
         if (!userId) throw new BadRequestException('invalid userId');
 
@@ -38,6 +42,7 @@ export class UserController {
 
     // 회원 정보 수정
     @Put(':user_id')
+    @UseGuards(AuthGuard('jwt'),UserMatchGuard)
     async updateUser(
         @Param('user_id', ParseIntPipe) userId: number,
         @Body() updateUserDto: UpdateUserDto,
@@ -49,6 +54,7 @@ export class UserController {
 
     // 비밀번호 변경
     @Patch(':user_id/password')
+    @UseGuards(AuthGuard('jwt'),UserMatchGuard)
     async updatePassword(
         @Param('user_id', ParseIntPipe) userId: number,
         @Body() updatePasswordDto: UpdatePasswordDto,
@@ -60,6 +66,7 @@ export class UserController {
 
     // 회원 탈퇴
     @Delete(':user_id')
+    @UseGuards(AuthGuard('jwt'),UserMatchGuard)
     @HttpCode(204)
     async softDeleteUser(@Param('user_id', ParseIntPipe) userId: number) {
         if (!userId) throw new BadRequestException('invalid userId');
