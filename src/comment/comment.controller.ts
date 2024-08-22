@@ -1,5 +1,7 @@
 import {Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put} from '@nestjs/common';
 import {CommentService} from "./comment.service";
+import {AddCommentDto} from "./dto/add-comment.dto";
+import {UpdateCommentDto} from "./dto/update-comment.dto";
 
 @Controller('comment')
 export class CommentController {
@@ -16,14 +18,14 @@ export class CommentController {
     }
 
     @Post()
-    async addComment(@Body() body: { postId: number; commentContent: string }): Promise<any> {
+    async addComment(@Body() body: AddCommentDto): Promise<any> {
         return await this.commentService.addComment(body.postId, body.commentContent);
     }
 
     @Put(':comment_id')
     async updateComment(
         @Param('comment_id', ParseIntPipe) commentId: number,
-        @Body() body: { commentContent: string },
+        @Body() body: UpdateCommentDto,
     ): Promise<any> {
         return await this.commentService.updateComment(commentId, body.commentContent);
     }

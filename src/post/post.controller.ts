@@ -1,5 +1,7 @@
 import {Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put} from '@nestjs/common';
 import {PostService} from './post.service';
+import {AddPostDto} from "./dto/add-post.dto";
+import {UpdatePostDto} from "./dto/update-post.dto";
 
 @Controller('post')
 export class PostController {
@@ -16,14 +18,14 @@ export class PostController {
     }
 
     @Post()
-    async addPost(@Body() body: { postTitle: string; postContent: string }): Promise<any> {
+    async addPost(@Body() body: AddPostDto): Promise<any> {
         return await this.postService.addPost(body.postTitle, body.postContent);
     }
 
     @Put(':post_id')
     async updateUser(
         @Param('post_id', ParseIntPipe) postId: number,
-        @Body() body: { postTitle: string; postContent: string },
+        @Body() body: UpdatePostDto,
     ): Promise<any> {
         return await this.postService.updatePost(postId, body.postTitle, body.postContent);
     }
