@@ -33,9 +33,7 @@ export class AuthService {
         const user = await this.userService.findByEmail(email);
 
         // 비밀번호 비교
-        if (!user || user.password !== password) {
-            throw new UnauthorizedException('invalid email or password');
-        }
+        if (!user || user.password !== password) throw new UnauthorizedException('invalid email or password');
 
         // 프로필 이미지 경로 매핑
         user.profileImagePath = await this.getProfileImagePath(user.userId, user.fileId);
@@ -51,9 +49,7 @@ export class AuthService {
 
         // 이메일 중복 체크
         const isExistEmail = await this.userService.checkEmail(email);
-        if (isExistEmail) {
-            throw new BadRequestException('already exist email');
-        }
+        if (isExistEmail) throw new BadRequestException('already exist email');
 
         // 계정 정보 생성
         const createUserDto: CreateUserDto = {
@@ -64,9 +60,7 @@ export class AuthService {
         };
         const user = await this.userService.createUser(createUserDto);
 
-        if (!user) {
-            throw new InternalServerErrorException('failed create user');
-        }
+        if (!user) throw new InternalServerErrorException('failed create user');
 
         // 비밀번호 제거한 후 반환
         delete user.password;
@@ -83,9 +77,7 @@ export class AuthService {
         }
         const getProfileImage = await this.fileService.getProfileImagePath(getProfileImagePathDto);
 
-        if (!getProfileImage) {
-            return '/public/image/profile/default.png';
-        }
+        if (!getProfileImage) return '/public/image/profile/default.png';
 
         return getProfileImage;
     }
