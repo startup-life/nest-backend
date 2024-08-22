@@ -1,5 +1,7 @@
 import {Controller, Get, Post, Put, Delete, Param, Body, ParseIntPipe, HttpCode} from '@nestjs/common';
 import { UserService } from './user.service';
+import {AddUserDto} from "./dto/add-user.dto";
+import {UpdateUserDto} from "./dto/update-user.dto";
 
 @Controller('user')
 export class UserController {
@@ -16,14 +18,14 @@ export class UserController {
     }
 
     @Post()
-    async addUser(@Body() body: { name: string; email: string }): Promise<any> {
+    async addUser(@Body() body: AddUserDto): Promise<any> {
         return await this.userService.addUser(body.name, body.email);
     }
 
     @Put(':user_id')
     async updateUser(
         @Param('user_id', ParseIntPipe) userId: number,
-        @Body() body: { name: string; email: string },
+        @Body() body: UpdateUserDto,
     ): Promise<any> {
         return await this.userService.updateUser(userId, body.name, body.email);
     }
