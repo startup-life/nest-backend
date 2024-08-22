@@ -12,6 +12,7 @@ import {
     Query, UnauthorizedException
 } from '@nestjs/common';
 import {PostService} from './post.service';
+import {AddPostDto} from "./dto/add-post.dto";
 
 @Controller('post')
 export class PostController {
@@ -42,9 +43,7 @@ export class PostController {
     @Post()
     async addPost(
         @Query('userid', ParseIntPipe) userId: number,
-        @Body('postTitle') postTitle: string,
-        @Body('postContent') postContent: string,
-        @Body('attachFilePath') attachFilePath?: string,
+        @Body() addPostDto: AddPostDto,
     ): Promise<any> {
         if (!userId) {
             throw new BadRequestException('invalid userId');

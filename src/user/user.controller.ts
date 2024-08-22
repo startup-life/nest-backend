@@ -12,6 +12,8 @@ import {
     Query
 } from '@nestjs/common';
 import {UserService} from './user.service';
+import {UpdateUserDto} from "./dto/update-user.dto";
+import {UpdatePasswordDto} from "./dto/update-password.dto";
 
 @Controller('user')
 export class UserController {
@@ -20,10 +22,8 @@ export class UserController {
     /**
      * 유저 정보 가져오기
      * 회원 정보 수정
-     * 로그인 상태 체크
      * 비밀번호 변경
      * 회원 탈퇴
-     * 로그아웃
      * 이메일 중복 체크
      * 닉네임 중복 체크
      */
@@ -42,21 +42,15 @@ export class UserController {
     @Put(':user_id')
     async updateUser(
         @Param('user_id', ParseIntPipe) userId: number,
-        @Body('nickname') nickname: string,
-        @Body('profileImagePath') profileImagePath?: string,
+        @Body() updateUserDto: UpdateUserDto,
     ) {
         if (!userId) {
             throw new BadRequestException('invalid userId');
         }
 
-        if (!nickname) {
-            throw new BadRequestException('nickname is required');
-        }
-
         const requestBody = {
             userId,
-            nickname,
-            profileImagePath
+            ...updateUserDto,
         }
 
         return await this.userService.updateUser(requestBody);
@@ -64,18 +58,17 @@ export class UserController {
 
     // 비밀번호 변경
     @Patch(':user_id/password')
-    async updatePassword(@Param('user_id', ParseIntPipe) userId: number, @Body('password') password: string) {
+    async updatePassword(
+        @Param('user_id', ParseIntPipe) userId: number,
+        @Body() updatePasswordDto: UpdatePasswordDto,
+    ) {
         if (!userId) {
             throw new BadRequestException('invalid userId');
         }
 
-        if (!password) {
-            throw new BadRequestException('password is required');
-        }
-
         const requestBody = {
             userId,
-            password
+            ...updatePasswordDto,
         }
 
         return await this.userService.updatePassword(requestBody);

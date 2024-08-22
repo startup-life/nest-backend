@@ -61,7 +61,13 @@ export class UserService {
         return user;
     }
 
-    async updateUser(requestBody: {userId: number, nickname: string, profileImagePath: string}): Promise<User> {
+    async updateUser(
+        requestBody: {
+            userId: number,
+            nickname: string,
+            profileImagePath?: string
+        }
+    ): Promise<User> {
         const { userId, nickname, profileImagePath } = requestBody;
 
         const user = await this.getUserById(userId);
@@ -94,7 +100,12 @@ export class UserService {
         return await this.getUserById(userId);
     }
 
-    async updatePassword(requestBody: {userId: number, password: string}): Promise<User> {
+    async updatePassword(
+        requestBody: {
+            userId: number,
+            password: string
+        }
+    ): Promise<User> {
         const { userId, password } = requestBody;
 
         const user = await this.getUserById(userId);
