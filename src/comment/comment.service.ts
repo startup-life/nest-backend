@@ -15,8 +15,6 @@ export class CommentService {
 
         @InjectRepository(Post)
         private readonly postRepository: Repository<Post>,
-
-        private readonly postService: PostService,
     ) {}
 
     async getAllComments(postId: number): Promise<any> {
@@ -62,9 +60,7 @@ export class CommentService {
         const newComment = await this.commentRepository.save(comment);
 
         // 게시글 댓글 수 증가
-        if (!newComment) {
-            throw new InternalServerErrorException('Failed to add comment');
-        }
+        if (!newComment) throw new InternalServerErrorException('Failed to add comment');
         await this.incrementCommentCount(postId);
 
         return comment;
@@ -75,9 +71,7 @@ export class CommentService {
 
         // 댓글 존재 여부 확인
         const comment = await this.commentRepository.findOne({where: { commentId, userId, postId }});
-        if (!comment) {
-            throw new NotFoundException('not found comment');
-        }
+        if (!comment) throw new NotFoundException('not found comment');
 
         // 댓글 수정
         comment.commentContent = commentContent;
@@ -90,17 +84,13 @@ export class CommentService {
     async softDeleteComment(postId: number, userId: number, commentId: number): Promise<any> {
         // 댓글 존재 여부 확인
         const comment = await this.commentRepository.findOne({where: { commentId, postId, userId }});
-        if (!comment) {
-            throw new NotFoundException('not found comment');
-        }
+        if (!comment) throw new NotFoundException('not found comment');
 
         // 댓글 삭제
         const deleteComment = await this.commentRepository.softDelete(comment.commentId);
 
         // 게시글 댓글 수 감소
-        if (!deleteComment) {
-            throw new InternalServerErrorException('Failed to delete comment');
-        }
+        if (!deleteComment) throw new InternalServerErrorException('Failed to delete comment');
         await this.decrementCommentCount(postId);
     }
 

@@ -20,9 +20,7 @@ export class CommentController {
 
     @Get('post/:post_id')
     async getAllComments(@Param('post_id', ParseIntPipe) postId: number): Promise<any[]> {
-        if (!postId) {
-            throw new BadRequestException('invalid postId');
-        }
+        if (!postId) throw new BadRequestException('invalid postId');
 
         return await this.commentService.getAllComments(postId);
     }
@@ -34,17 +32,9 @@ export class CommentController {
         @Query('nickname') nickname: string,
         @Body() addCommentDto: AddCommentDto,
     ): Promise<any> {
-        if (!postId) {
-            throw new BadRequestException('invalid postId');
-        }
-
-        if (!userId) {
-            throw new BadRequestException('invalid userId');
-        }
-
-        if (!nickname) {
-            throw new BadRequestException('invalid nickname');
-        }
+        if (!postId) throw new BadRequestException('invalid postId');
+        if (!userId) throw new BadRequestException('invalid userId');
+        if (!nickname) throw new BadRequestException('invalid nickname');
 
         return await this.commentService.addComment(postId, userId, nickname, addCommentDto);
     }
@@ -57,24 +47,12 @@ export class CommentController {
         @Query('nickname') nickname: string,
         @Body() updateCommentDto: UpdateCommentDto,
     ): Promise<any> {
-        if (!postId) {
-            throw new BadRequestException('invalid postId');
-        }
-
-        if (!commentId) {
-            throw new BadRequestException('invalid commentId');
-        }
-
-        if (!userId) {
-            throw new BadRequestException('invalid userId');
-        }
-
-        if (!nickname) {
-            throw new BadRequestException('invalid nickname');
-        }
+        if (!postId) throw new BadRequestException('invalid postId');
+        if (!commentId) throw new BadRequestException('invalid commentId');
+        if (!userId) throw new BadRequestException('invalid userId');
+        if (!nickname) throw new BadRequestException('invalid nickname');
 
         return await this.commentService.updateComment(postId, commentId, userId, nickname, updateCommentDto);
-
     }
 
     @Delete('post/:post_id/:comment_id')
@@ -83,17 +61,9 @@ export class CommentController {
         @Param('comment_id', ParseIntPipe) commentId: number,
         @Query('userid', ParseIntPipe) userId: number,
     ): Promise<any> {
-        if (!postId) {
-            throw new BadRequestException('invalid postId');
-        }
-
-        if (!commentId) {
-            throw new BadRequestException('invalid commentId');
-        }
-
-        if (!userId) {
-            throw new BadRequestException('invalid userId');
-        }
+        if (!postId) throw new BadRequestException('invalid postId');
+        if (!commentId) throw new BadRequestException('invalid commentId');
+        if (!userId) throw new BadRequestException('invalid userId');
 
         return await this.commentService.softDeleteComment(postId, userId, commentId);
     }
