@@ -14,7 +14,7 @@ export class UploadController {
         FileInterceptor('profileImage', {
             storage: diskStorage({
                 destination: UploadService.PROFILE_IMAGE_PATH,
-                filename: (req, file, cb) => {
+                filename: (request, file, cb) => {
                     const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
                     cb(null, `${file.fieldname}-${uniqueSuffix}${extname(file.originalname)}`);
                 },
@@ -24,28 +24,6 @@ export class UploadController {
     uploadProfileFile(@UploadedFile() file: Express.Multer.File) {
         return this.uploadService.uploadProfileFile(file);
     }
-    /*@Post('profile')
-    @UseInterceptors(
-        FileInterceptor('file', {
-            storage: diskStorage({
-                destination: './public/image/profile',
-                filename: (req, file, cb) => {
-                    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-                    cb(null, `${file.fieldname}-${uniqueSuffix}${extname(file.originalname)}`);
-                },
-            }),
-        }),
-    )
-    uploadProfileFile(@UploadedFile() file: Express.Multer.File) {
-        if (!file) {
-            throw new BadRequestException('Invalid file');
-        }
-        if (!file.mimetype.includes('image')) {
-            throw new BadRequestException('Invalid file type');
-        }
-
-        return `/public/image/profile/${file.filename}`;
-    }*/
 
     // 게시물 이미지 업로드
     @Post('post')
@@ -53,7 +31,7 @@ export class UploadController {
         FileInterceptor('postImage', {
             storage: diskStorage({
                 destination: UploadService.POST_IMAGE_PATH,
-                filename: (req, file, cb) => {
+                filename: (request, file, cb) => {
                     const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
                     cb(null, `${file.fieldname}-${uniqueSuffix}${extname(file.originalname)}`);
                 },
@@ -63,22 +41,4 @@ export class UploadController {
     uploadPostFile(@UploadedFile() file: Express.Multer.File) {
         return this.uploadService.uploadPostFile(file);
     }
-/*    @Post('post')
-    @UseInterceptors(
-        FileInterceptor('file', {
-            storage: diskStorage({
-                destination: './public/image/post',
-                filename: (req, file, cb) => {
-                    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-                    cb(null, `${file.fieldname}-${uniqueSuffix}${extname(file.originalname)}`);
-                },
-            }),
-        }),
-    )
-    uploadPostFile(@UploadedFile() file: Express.Multer.File) {
-        if (!file) {
-            throw new Error('Invalid file');
-        }
-        return `/public/image/post/${file.filename}`;
-    }*/
 }
