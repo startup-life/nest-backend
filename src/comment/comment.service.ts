@@ -1,10 +1,11 @@
-import {Injectable, NotFoundException, UnauthorizedException} from '@nestjs/common';
+import {Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException} from '@nestjs/common';
 import {InjectRepository} from "@nestjs/typeorm";
 import {Repository} from "typeorm";
 import {Comment} from "./comment.entity";
 import {Post} from "../post/post.entity";
-import {File} from "../file/file.entity";
-import {UserService} from "../user/user.service";
+import {AddCommentDto} from "./dto/add-comment.dto";
+import {UpdateCommentDto} from "./dto/update-comment.dto";
+import {PostService} from "../post/post.service";
 
 @Injectable()
 export class CommentService {
@@ -15,10 +16,7 @@ export class CommentService {
         @InjectRepository(Post)
         private readonly postRepository: Repository<Post>,
 
-        @InjectRepository(File)
-        private readonly fileRepository: Repository<File>,
-
-        private readonly userService: UserService,
+        private readonly postService: PostService,
     ) {}
 
     async getAllComments(postId: number): Promise<any> {
@@ -35,9 +33,8 @@ export class CommentService {
             .andWhere('ct.deleted_at IS NULL')
             .getRawMany();
 
-        if (!comments || comments.length === 0) return null;
+        if (comments.length === 0) return null;
 
-        // ct_comment_id 이런식이 아니라 comment_id 로 원래 컬럼의 이름으로 리턴
         return comments.map(comment => {
             return {
                 commentId: comment.ct_comment_id,
@@ -52,110 +49,68 @@ export class CommentService {
         });
     }
 
-    async addComment(
-        requestBody: {
-            postId: number,
-            userId: number,
-            commentContent: string
-        }
-    ): Promise<any> {
-        const { postId, userId, commentContent } = requestBody;
+    async addComment(postId: number, userId: number, nickname: string, addCommentDto: AddCommentDto): Promise<Comment> {
+        const { commentContent } = addCommentDto;
 
-        const writerNickname = await this.userService.getNickname(userId);
-        if (!writerNickname) {
-            throw new UnauthorizedException('invalid user');
-        }
-
-        const post = await this.postRepository.findOne({where: { postId }});
-        if (!post) {
-            throw new NotFoundException('not found post');
-        }
-
+        // 댓글 생성
         const comment = new Comment();
         comment.postId = postId;
         comment.userId = userId;
+        comment.nickname = nickname;
         comment.commentContent = commentContent;
-        comment.nickname = writerNickname
-        await this.commentRepository.save(comment);
+
+        const newComment = await this.commentRepository.save(comment);
 
         // 게시글 댓글 수 증가
-        const commentCount = post.commentCount + 1;
-        await this.postRepository.update({ postId }, { commentCount });
+        if (!newComment) {
+            throw new InternalServerErrorException('Failed to add comment');
+        }
+        await this.incrementCommentCount(postId);
 
         return comment;
     }
 
-    async updateComment(
-        requestBody: {
-            postId: number,
-            userId: number,
-            commentId: number,
-            commentContent: string
-        }
-    ): Promise<any> {
-        const { postId, userId, commentId, commentContent } = requestBody;
+    async updateComment(postId: number, commentId: number, userId: number, nickname: string, updateCommentDto: UpdateCommentDto): Promise<any> {
+        const { commentContent } = updateCommentDto;
 
-        const checkPost = await this.postRepository.findOne({where: { postId }});
-        if (!checkPost) {
-            throw new NotFoundException('not found post');
-        }
-
-        const comment = await this.commentRepository.findOne({where: { commentId }});
+        // 댓글 존재 여부 확인
+        const comment = await this.commentRepository.findOne({where: { commentId, userId, postId }});
         if (!comment) {
             throw new NotFoundException('not found comment');
         }
 
-        const isCommentOnPost = comment.postId === postId;
-        if (!isCommentOnPost) {
-            throw new NotFoundException('not found comment on post');
-        }
-
-        const checkWriter = comment.userId === userId;
-        if (!checkWriter) throw new UnauthorizedException('invalid user');
-
-        const writerNickname = await this.userService.getNickname(userId);
-
+        // 댓글 수정
         comment.commentContent = commentContent;
-        comment.nickname = writerNickname
+        comment.nickname = nickname;
         await this.commentRepository.save(comment);
 
         return comment;
     }
 
-    async softDeleteComment(
-        requestBody: {
-            postId: number,
-            userId: number,
-            commentId: number
-        }
-    ): Promise<any> {
-        const { postId, userId, commentId } = requestBody;
-
-        const post = await this.postRepository.findOne({where: { postId }});
-        if (!post) {
-            throw new NotFoundException('not found post');
-        }
-
-        const comment = await this.commentRepository.findOne({where: { commentId }});
+    async softDeleteComment(postId: number, userId: number, commentId: number): Promise<any> {
+        // 댓글 존재 여부 확인
+        const comment = await this.commentRepository.findOne({where: { commentId, postId, userId }});
         if (!comment) {
             throw new NotFoundException('not found comment');
         }
 
-        const isCommentOnPost = comment.postId === postId;
-        if (!isCommentOnPost) {
-            throw new NotFoundException('not found comment on post');
-        }
-
-        const checkWriter = comment.userId === userId;
-        if (!checkWriter) throw new UnauthorizedException('invalid user');
-
-        comment.deletedAt = new Date();
-        await this.commentRepository.save(comment);
+        // 댓글 삭제
+        const deleteComment = await this.commentRepository.softDelete(comment.commentId);
 
         // 게시글 댓글 수 감소
-        const commentCount = post.commentCount - 1;
-        await this.postRepository.update({ postId }, { commentCount });
+        if (!deleteComment) {
+            throw new InternalServerErrorException('Failed to delete comment');
+        }
+        await this.decrementCommentCount(postId);
+    }
 
-        return comment;
+    // private methods
+
+    private async incrementCommentCount(postId: number): Promise<void> {
+        await this.postRepository.increment({ postId }, 'commentCount', 1);
+    }
+
+    private async decrementCommentCount(postId: number): Promise<void> {
+        await this.postRepository.decrement({ postId }, 'commentCount', 1);
     }
 }

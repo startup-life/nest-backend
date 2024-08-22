@@ -11,6 +11,8 @@ import {
     Put, Query
 } from '@nestjs/common';
 import {CommentService} from "./comment.service";
+import {AddCommentDto} from "./dto/add-comment.dto";
+import {UpdateCommentDto} from "./dto/update-comment.dto";
 
 @Controller('comment')
 export class CommentController {
@@ -29,7 +31,8 @@ export class CommentController {
     async addComment(
         @Param('post_id', ParseIntPipe) postId: number,
         @Query('userid', ParseIntPipe) userId: number,
-        @Body('commentContent') commentContent: string,
+        @Query('nickname') nickname: string,
+        @Body() addCommentDto: AddCommentDto,
     ): Promise<any> {
         if (!postId) {
             throw new BadRequestException('invalid postId');
@@ -39,21 +42,11 @@ export class CommentController {
             throw new BadRequestException('invalid userId');
         }
 
-        if (!commentContent) {
-            throw new BadRequestException('invalid commentContent');
+        if (!nickname) {
+            throw new BadRequestException('invalid nickname');
         }
 
-        if (commentContent.length > 1000) {
-            throw new BadRequestException('commentContent is too long');
-        }
-
-        const requestBody = {
-            postId,
-            userId,
-            commentContent,
-        };
-
-        return await this.commentService.addComment(requestBody);
+        return await this.commentService.addComment(postId, userId, nickname, addCommentDto);
     }
 
     @Put('post/:post_id/:comment_id')
@@ -61,7 +54,8 @@ export class CommentController {
         @Param('post_id', ParseIntPipe) postId: number,
         @Param('comment_id', ParseIntPipe) commentId: number,
         @Query('userid', ParseIntPipe) userId: number,
-        @Body('commentContent') commentContent: string,
+        @Query('nickname') nickname: string,
+        @Body() updateCommentDto: UpdateCommentDto,
     ): Promise<any> {
         if (!postId) {
             throw new BadRequestException('invalid postId');
@@ -71,27 +65,20 @@ export class CommentController {
             throw new BadRequestException('invalid commentId');
         }
 
-        if (!commentContent) {
-            throw new BadRequestException('invalid commentContent');
+        if (!userId) {
+            throw new BadRequestException('invalid userId');
         }
 
-        if (commentContent.length > 1000) {
-            throw new BadRequestException('commentContent is too long');
+        if (!nickname) {
+            throw new BadRequestException('invalid nickname');
         }
 
-        const requestBody = {
-            postId,
-            userId,
-            commentId,
-            commentContent,
-        };
-
-        return await this.commentService.updateComment(requestBody);
+        return await this.commentService.updateComment(postId, commentId, userId, nickname, updateCommentDto);
 
     }
 
     @Delete('post/:post_id/:comment_id')
-    async deleteComment(
+    async softDeleteComment(
         @Param('post_id', ParseIntPipe) postId: number,
         @Param('comment_id', ParseIntPipe) commentId: number,
         @Query('userid', ParseIntPipe) userId: number,
@@ -108,12 +95,6 @@ export class CommentController {
             throw new BadRequestException('invalid userId');
         }
 
-        const requestBody = {
-            postId,
-            userId,
-            commentId,
-        };
-
-        return await this.commentService.softDeleteComment(requestBody);
+        return await this.commentService.softDeleteComment(postId, userId, commentId);
     }
 }

@@ -6,11 +6,13 @@ import {Comment} from "./comment.entity";
 import {Post} from "../post/post.entity";
 import {File} from "../file/file.entity";
 import {UserModule} from "../user/user.module";
+import {PostModule} from "../post/post.module";
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([Comment, Post, File]),
-        UserModule
+        UserModule,
+        PostModule,
     ],
     providers: [CommentService],
     controllers: [CommentController],

@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, DeleteDateColumn } from 'typeorm';
 import { Post } from '../post/post.entity';
 import { User } from '../user/user.entity';
 
@@ -25,8 +25,8 @@ export class Comment {
     @Column({ type: 'timestamp', name: 'updated_at', nullable: true, default: () => 'CURRENT_TIMESTAMP' })
     updatedAt: Date;
 
-    @Column({ type: 'timestamp', name: 'deleted_at', nullable: true })
-    deletedAt: Date;
+    @DeleteDateColumn({ type: 'timestamp', name: 'deleted_at', nullable: true })
+    deletedAt?: Date;
 
     @ManyToOne(() => Post, post => post.comments)
     @JoinColumn({ name: 'post_id' })
