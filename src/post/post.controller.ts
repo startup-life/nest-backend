@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import {PostService} from './post.service';
 import {AddPostDto} from "./dto/add-post.dto";
+import {UpdatePostDto} from "./dto/update-post.dto";
 
 @Controller('post')
 export class PostController {
@@ -33,9 +34,7 @@ export class PostController {
 
     @Get(':post_id')
     async getPostById(@Param('post_id', ParseIntPipe) postId: number): Promise<any> {
-        if (!postId) {
-            throw new BadRequestException('invalid postId');
-        }
+        if (!postId) throw new BadRequestException('invalid postId');
 
         return await this.postService.getPostById(postId);
     }
@@ -43,100 +42,38 @@ export class PostController {
     @Post()
     async addPost(
         @Query('userid', ParseIntPipe) userId: number,
+        @Query('nickname') nickname: string,
         @Body() addPostDto: AddPostDto,
     ): Promise<any> {
-        if (!userId) {
-            throw new BadRequestException('invalid userId');
-        }
+        if (!userId) throw new BadRequestException('invalid userId');
+        if (!nickname) throw new BadRequestException('invalid nickname');
 
-        if (!postTitle) {
-            throw new BadRequestException('postTitle is required');
-        }
-
-        if (postTitle.length > 26) {
-            throw new BadRequestException('postTitle must be less than 26 characters');
-        }
-
-        if (!postContent) {
-            throw new BadRequestException('postContent is required');
-        }
-
-        if (postContent.length > 1500) {
-            throw new BadRequestException('postContent must be less than 1500 characters');
-        }
-
-        const requestBody = {
-            userId,
-            postTitle,
-            postContent,
-            attachFilePath,
-        };
-
-        return await this.postService.addPost(requestBody);
+        return await this.postService.addPost(userId, nickname, addPostDto);
     }
 
     @Put(':post_id')
     async updatePost(
-        @Query('userid', ParseIntPipe) userId: number,
         @Param('post_id', ParseIntPipe) postId: number,
-        @Body('postTitle') postTitle: string,
-        @Body('postContent') postContent: string,
-        @Body('attachFilePath') attachFilePath?: string,
+        @Query('userid', ParseIntPipe) userId: number,
+        @Query('nickname') nickname: string,
+        @Body() updatePostDto: UpdatePostDto,
     ): Promise<any> {
-        if (!userId) {
-            throw new BadRequestException('invalid userId');
-        }
+        if (!postId) throw new BadRequestException('invalid postId');
+        if (!userId) throw new BadRequestException('invalid userId');
+        if (!nickname) throw new BadRequestException('invalid nickname');
 
-        if (!postId) {
-            throw new BadRequestException('invalid postId');
-        }
-
-        if (!postTitle) {
-            throw new BadRequestException('postTitle is required');
-        }
-
-        if (postTitle.length > 26) {
-            throw new BadRequestException('postTitle must be less than 26 characters');
-        }
-
-        if (!postContent) {
-            throw new BadRequestException('postContent is required');
-        }
-
-        if (postContent.length > 1500) {
-            throw new BadRequestException('postContent must be less than 1500 characters');
-        }
-
-        const requestBody = {
-            userId,
-            postId,
-            postTitle,
-            postContent,
-            attachFilePath,
-        }
-
-        return await this.postService.updatePost(requestBody);
+        return await this.postService.updatePost(postId, userId, nickname, updatePostDto);
     }
 
     @Delete(':post_id')
     @HttpCode(204)
     async deletePost(
-        @Query('userid', ParseIntPipe) userId: number,
         @Param('post_id', ParseIntPipe) postId: number,
+        @Query('userid', ParseIntPipe) userId: number,
     ): Promise<any> {
-        if (!userId) {
-            throw new BadRequestException('invalid userId');
-        }
+        if (!userId) throw new BadRequestException('invalid userId');
+        if (!postId) throw new BadRequestException('invalid postId');
 
-        if (!postId) {
-            throw new BadRequestException('invalid postId');
-        }
-
-        const requestBody = {
-            userId,
-            postId,
-        }
-
-        return await this.postService.softDeletePost(requestBody);
+        return await this.postService.softDeletePost(postId, userId);
     }
 }

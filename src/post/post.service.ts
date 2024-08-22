@@ -6,18 +6,18 @@ import {InjectRepository} from "@nestjs/typeorm";
 import {FileService} from "../file/file.service";
 import {User} from "../user/user.entity";
 import {File} from "../file/file.entity";
+import {AddPostDto} from "./dto/add-post.dto";
+import {UpdatePostDto} from "./dto/update-post.dto";
+import {CreatePostImageDto} from "../file/dto/create-post-image.dto";
 
 @Injectable()
 export class PostService {
     constructor(
         @InjectRepository(Post)
         private readonly postRepository: Repository<Post>,
-        @InjectRepository(User)
-        private readonly userRepository: Repository<User>,
         @InjectRepository(File)
         private readonly fileRepository: Repository<File>,
 
-        private readonly userService: UserService,
         private readonly fileService: FileService,
     ) {}
 
@@ -66,8 +66,8 @@ export class PostService {
             createdAt: post.createdAt, // 생성 날짜
             updatedAt: post.updatedAt, // 수정 날짜
             deletedAt: post.deletedAt, // 삭제 날짜
-            profileImagePath: post.user.files[0]?.filePath || '/public/image/profile/default.jpg', // 프로필 이미지 경로
-            filePath: post.files[0]?.filePath || null, // 게시글에 첨부된 파일 경로
+            profileImagePath: post.user.files?.[0]?.filePath || '/public/image/profile/default.jpg', // 프로필 이미지 경로
+            filePath: post.files?.[0]?.filePath || null, // 게시글에 첨부된 파일 경로
             commentsCount: post.commentCount // 댓글 수
         }));
     }
@@ -94,9 +94,7 @@ export class PostService {
             .andWhere('post.deletedAt IS NULL')
             .getOne();
 
-        if (!post) {
-            throw new NotFoundException('Post not found');
-        }
+        if (!post) throw new NotFoundException('Post not found');
 
         return {
             postId: post.postId, // 게시글 ID
@@ -111,116 +109,84 @@ export class PostService {
             createdAt: post.createdAt, // 생성 날짜
             updatedAt: post.updatedAt, // 수정 날짜
             deletedAt: post.deletedAt, // 삭제 날짜
-            profileImagePath: post.user.files[0]?.filePath || '/public/image/profile/default.jpg', // 프로필 이미지 경로
-            filePath: post.files[0]?.filePath || null, // 게시글에 첨부된 파일 경로
+            profileImagePath: post.user.files?.[0]?.filePath || '/public/image/profile/default.jpg', // 프로필 이미지 경로
+            filePath: post.files?.[0]?.filePath || null, // 게시글에 첨부된 파일 경로
             commentsCount: post.commentCount // 댓글 수
         };
     }
 
-    async addPost(
-        requestBody: {
-            userId: number;
-            postTitle: string;
-            postContent: string;
-            attachFilePath?: string;
-        }
-    ): Promise<any> {
-        const { userId, postTitle, postContent, attachFilePath } = requestBody;
+    async addPost(userId: number, nickname: string, addPostDto: AddPostDto): Promise<any> {
+        const { postTitle, postContent, attachFilePath } = addPostDto;
 
-        const writerNickname = await this.userService.getNickname(userId);
-
-        if (!writerNickname) {
-            throw new UnauthorizedException('Invalid user');
-        }
-
-        // 새 Post 객체를 생성합니다.
+        // 새로운 Post 객체 생성 및 저장
         let newPost = this.postRepository.create({
             userId,
-            nickname: writerNickname,
+            nickname,
             postTitle,
             postContent,
         });
-
-        // 새 Post를 먼저 저장하여 postId를 생성합니다.
         newPost = await this.postRepository.save(newPost);
 
-        if (!newPost) {
-            throw new InternalServerErrorException('Failed create post');
-        }
+        if (!newPost) throw new InternalServerErrorException('Failed create post');
 
-        // 파일이 있는 경우 fileId를 설정하고 다시 저장합니다.
+        // 파일이 있는 경우 fileId를 설정하고 다시 저장
         if (attachFilePath) {
-            const postFile = await this.fileService.createPostImage(userId, newPost.postId, attachFilePath);
-            newPost.fileId = postFile.fileId;
-            await this.postRepository.save(newPost);
+            newPost.fileId = await this.getNewPostFileId(userId, newPost.postId, attachFilePath);
+            newPost = await this.postRepository.save(newPost);
         }
 
         return newPost;
     }
 
-    async updatePost(
-        requestBody: {
-            userId: number;
-            postId: number;
-            postTitle: string;
-            postContent: string;
-            attachFilePath?: string
-        }): Promise<any> {
-        const { userId, postId, postTitle, postContent, attachFilePath } = requestBody;
+    async updatePost(postId: number, userId: number, nickname: string, updatePostDto: UpdatePostDto): Promise<any> {
+        const { postTitle, postContent, attachFilePath } = updatePostDto;
+
+        // 게시글 조회
         const post = await this.getPostById(postId);
 
-        if (!post) {
-            throw new NotFoundException('Post not found');
-        }
+        // 제목, 내용, 닉네임 업데이트
+        const savedPost = await this.postRepository.update({ postId, userId }, { postTitle, postContent, nickname });
+        if (!savedPost) throw new NotFoundException('Post not found');
 
-        const checkWriter = post.userId === userId;
-        if (!checkWriter) {
-            throw new NotFoundException('Invalid user');
-        }
-
-        post.postTitle = postTitle;
-        post.postContent = postContent;
-
-        if (attachFilePath === post.filePath) {
-            await this.postRepository.save(post);
-            return await this.getPostById(postId);
-        }
-
+        // 파일이 없는 경우
         if (!attachFilePath) {
             // file 테이블에서 postId 제거
-            await this.fileRepository.update({ fileId: post.fileId }, { postId: null });
-            post.fileId = null;
-            await this.postRepository.save(post);
+            await Promise.all([
+                this.fileRepository.update({ fileId: post.fileId }, { postId: null }),
+                this.postRepository.update({ postId, userId }, { fileId: null })
+            ]);
             return await this.getPostById(postId);
         }
 
-        const postFile = await this.fileService.createPostImage(post.userId, post.postId, attachFilePath);
-        post.fileId = postFile.fileId;
-        await this.postRepository.save(post);
+        // 기존 파일과 같은 경우
+        if (attachFilePath === post.filePath) return await this.getPostById(postId);
+
+        // 새로운 파일 추가
+        const postFileId = await this.getNewPostFileId(userId, postId, attachFilePath);
+        await this.postRepository.update({ postId, userId }, { fileId: postFileId });
 
         return await this.getPostById(postId);
     }
 
-    async softDeletePost(
-        requestBody:{
-            userId: number,
-            postId: number
-        }
-    ): Promise<any> {
-        const { userId, postId } = requestBody;
-
+    async softDeletePost(postId: number, userId: number): Promise<any> {
         const post = await this.getPostById(postId);
+        if (!post) throw new NotFoundException('Post not found');
 
-        if (!post) {
-            throw new NotFoundException('Post not found');
-        }
+        const deletePost = await this.postRepository.softDelete({ postId, userId });
+        if (!deletePost) throw new NotFoundException('Post not found');
 
-        const checkWriter = post.userId === userId;
-        if (!checkWriter) {
-            throw new NotFoundException('Invalid user');
-        }
+        return deletePost;
+    }
 
-        post.deletedAt = new Date();
-        return await this.postRepository.save(post);
+    // private method
+
+    private async getNewPostFileId(userId: number, postId: number, filePath: string): Promise<any> {
+        const createPostImageDto: CreatePostImageDto = {
+            userId,
+            postId,
+            filePath,
+        };
+        const postFile = await this.fileService.createPostImage(createPostImageDto);
+        return postFile.fileId;
     }
 }

@@ -1,6 +1,6 @@
 import {IsNotEmpty, IsOptional, IsString, Length} from "class-validator";
 
-export class AddPostDto {
+export class UpdatePostDto {
     @IsNotEmpty()
     @IsString()
     @Length(1, 26)
