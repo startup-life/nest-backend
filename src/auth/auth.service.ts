@@ -51,6 +51,9 @@ export class AuthService {
         const isExistEmail = await this.userService.checkEmail(email);
         if (isExistEmail) throw new BadRequestException('already exist email');
 
+        const isExistNickname = await this.userService.checkNickname(nickname);
+        if (isExistNickname) throw new BadRequestException('already exist nickname');
+
         // 계정 정보 생성
         const createUserDto: CreateUserDto = {
             email,
