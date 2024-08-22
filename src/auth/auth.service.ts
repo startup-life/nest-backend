@@ -2,7 +2,6 @@ import {
     BadRequestException,
     Injectable,
     InternalServerErrorException,
-    NotFoundException,
     UnauthorizedException
 } from '@nestjs/common';
 import { UserService } from '../user/user.service';
@@ -12,6 +11,9 @@ import {LoginUserDto} from "./dto/login-user.dto";
 import {SignUpUserDto} from "./dto/sign-up-user.dto";
 import {CreateUserDto} from "../user/dto/create-user.dto";
 import {GetProfileImagePathDto} from "../file/dto/get-profile-image-path.dto";
+import * as bcrypt from 'bcrypt';
+
+const SALT_ROUNDS = 10;
 
 @Injectable()
 export class AuthService {
@@ -32,8 +34,10 @@ export class AuthService {
         // 이메일로 사용자 조회
         const user = await this.userService.findByEmail(email);
 
-        // 비밀번호 비교
-        if (!user || user.password !== password) throw new UnauthorizedException('invalid email or password');
+        // 암호화 된 비밀번호 비교
+        const validPassword = await bcrypt.compare(password, user.password);
+        if (!user || !validPassword) throw new UnauthorizedException('invalid email or password');
+
 
         // 프로필 이미지 경로 매핑
         user.profileImagePath = await this.getProfileImagePath(user.userId, user.fileId);
@@ -51,13 +55,18 @@ export class AuthService {
         const isExistEmail = await this.userService.checkEmail(email);
         if (isExistEmail) throw new BadRequestException('already exist email');
 
+        // 닉네임 중복 체크
         const isExistNickname = await this.userService.checkNickname(nickname);
         if (isExistNickname) throw new BadRequestException('already exist nickname');
+
+        // 비밀번호 암호화
+        const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+        if (!hashedPassword) throw new InternalServerErrorException('failed hash password');
 
         // 계정 정보 생성
         const createUserDto: CreateUserDto = {
             email,
-            password,
+            password: hashedPassword,
             nickname,
             profileImagePath,
         };
