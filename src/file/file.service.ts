@@ -20,9 +20,8 @@ export class FileService {
             where: { userId, fileId, fileCategory: 0 },
         });
 
-        if (file) {
-            return file.filePath;
-        }
+        if (file) return file.filePath;
+
         return '/public/image/profile/default.png';
     }
 
