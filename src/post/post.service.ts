@@ -21,7 +21,7 @@ export class PostService {
         private readonly fileService: FileService,
     ) {}
 
-    async getAllPosts(): Promise<any[]> {
+    async getAllPosts(offset: number, limit: number): Promise<any[]> {
         const posts = await this.postRepository
             .createQueryBuilder('post')
             .leftJoinAndSelect('post.user', 'user')
@@ -41,6 +41,8 @@ export class PostService {
             ])
             .where('post.deletedAt IS NULL')
             .orderBy('post.createdAt', 'DESC')
+            .skip(offset)
+            .take(limit)
             .getMany();
 
         // foreach로 로그

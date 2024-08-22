@@ -10,7 +10,7 @@ import {
     Post,
     Put,
     UseGuards,
-    Request
+    Request, Query
 } from '@nestjs/common';
 import {PostService} from './post.service';
 import {AddPostDto} from "./dto/add-post.dto";
@@ -31,8 +31,11 @@ export class PostController {
 
     @Get()
     @UseGuards(AuthGuard('jwt'))
-    async getAllPosts(): Promise<any[]> {
-        return await this.postService.getAllPosts();
+    async getAllPosts(
+        @Query('offset') offset: number,
+        @Query('limit') limit: number,
+    ): Promise<any[]> {
+        return await this.postService.getAllPosts(offset, limit);
     }
 
     @Get(':post_id')
