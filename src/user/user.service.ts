@@ -8,6 +8,10 @@ import {UpdatePasswordDto} from "./dto/update-password.dto";
 import {CreateUserDto} from "./dto/create-user.dto";
 import {GetProfileImagePathDto} from "../file/dto/get-profile-image-path.dto";
 import {CreateProfileImageDto} from "../file/dto/create-profile-image.dto";
+import * as bcrypt from 'bcrypt';
+
+const SALT_ROUNDS = 10;
+
 
 @Injectable()
 export class UserService {
@@ -107,8 +111,11 @@ export class UserService {
     async updatePassword(userId: number, updatePasswordDto: UpdatePasswordDto): Promise<any> {
         const { password } = updatePasswordDto;
 
+        // 비밀번호 암호화
+        const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+
         // 비밀번호 변경
-        const changePass = await this.userRepository.update(userId, { password });
+        const changePass = await this.userRepository.update(userId, { password: hashedPassword });
         if (!changePass) throw new NotFoundException('not found user');
 
         return await this.getUserById(userId);
