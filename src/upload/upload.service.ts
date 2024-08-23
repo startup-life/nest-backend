@@ -15,11 +15,8 @@ export class UploadService {
             throw new BadRequestException('Invalid file type');
         }
 
-        const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-        const filename = `${file.fieldname}-${uniqueSuffix}${extname(file.originalname)}`;
-
-        // 파일 저장 로직 (여기서는 예시로 파일 이름 반환)
-        return `/image/profile/${filename}`;
+        // 파일 이름을 서비스에서 다시 생성하지 않고, 컨트롤러에서 넘어온 파일 객체의 이름을 사용
+        return `/image/profile/${file.filename}`;
     }
 
     uploadPostFile(file: Express.Multer.File): string {
@@ -30,10 +27,7 @@ export class UploadService {
             throw new BadRequestException('Invalid file type');
         }
 
-        const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-        const filename = `${file.fieldname}-${uniqueSuffix}${extname(file.originalname)}`;
-
-        // 파일 저장 로직 (여기서는 예시로 파일 이름 반환)
-        return `/image/post/${filename}`;
+        // 컨트롤러에서 넘어온 파일 객체의 이름을 사용하여 반환
+        return `/image/post/${file.filename}`;
     }
 }
