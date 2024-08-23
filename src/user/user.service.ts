@@ -82,22 +82,22 @@ export class UserService {
         // 유저 정보 조회
         const user = await this.getUserById(userId);
 
-        const savedUser = await this.userRepository.update(userId, { nickname });
-        if (!savedUser) throw new NotFoundException('not found user');
+        // 닉네임 수정
+        if (nickname) {
+            user.nickname = nickname;
+        }
 
         // 프로필 이미지 경로가 없는 경우
         if (!profileImagePath) {
             // 프로필 이미지 삭제
-            await this.userRepository.update(userId, { fileId: null });
-            return await this.getUserById(userId);
+            user.fileId = null;
+        } else if (profileImagePath !== user.profileImagePath) {
+            // 새로운 프로필 이미지 경로 저장
+            const profileImage = await this.createProfileImage(user.userId, profileImagePath);
+            user.fileId = profileImage.fileId;
         }
 
-        // 기존 프로필 이미지 경로와 같은 경우
-        if (profileImagePath === user.profileImagePath) return await this.getUserById(userId);
-
-        // 새로운 프로필 이미지 경로 저장
-        const profileImage = await this.createProfileImage(user.userId, profileImagePath);
-        user.fileId = profileImage.fileId;
+        // 변경된 유저 정보 저장
         await this.userRepository.save(user);
 
         return await this.getUserById(userId);
