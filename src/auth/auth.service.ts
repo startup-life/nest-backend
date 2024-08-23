@@ -94,7 +94,7 @@ export class AuthService {
         }
         const getProfileImage = await this.fileService.getProfileImagePath(getProfileImagePathDto);
 
-        if (!getProfileImage) return '/public/image/profile/default.png';
+        if (!getProfileImage) return '/image//profile/default.jpg';
 
         return getProfileImage;
     }

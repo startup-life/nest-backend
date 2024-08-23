@@ -19,7 +19,7 @@ export class UploadService {
         const filename = `${file.fieldname}-${uniqueSuffix}${extname(file.originalname)}`;
 
         // 파일 저장 로직 (여기서는 예시로 파일 이름 반환)
-        return `/public/image/profile/${filename}`;
+        return `/image//profile/${filename}`;
     }
 
     uploadPostFile(file: Express.Multer.File): string {
@@ -34,6 +34,6 @@ export class UploadService {
         const filename = `${file.fieldname}-${uniqueSuffix}${extname(file.originalname)}`;
 
         // 파일 저장 로직 (여기서는 예시로 파일 이름 반환)
-        return `/public/image/post/${filename}`;
+        return `/image//post/${filename}`;
     }
 }

@@ -37,7 +37,7 @@ export class PostService {
                 `CASE WHEN post.hits >= 1000000 THEN CONCAT(ROUND(post.hits / 1000000, 1), 'M') 
               WHEN post.hits >= 1000 THEN CONCAT(ROUND(post.hits / 1000, 1), 'K') 
               ELSE post.hits END`,
-                `COALESCE(userFile.filePath, '/public/image/profile/default.jpg')`
+                `COALESCE(userFile.filePath, '/image//profile/default.jpg')`
             ])
             .where('post.deletedAt IS NULL')
             .orderBy('post.createdAt', 'DESC')
@@ -68,7 +68,7 @@ export class PostService {
             createdAt: post.createdAt, // 생성 날짜
             updatedAt: post.updatedAt, // 수정 날짜
             deletedAt: post.deletedAt, // 삭제 날짜
-            profileImagePath: post.user.files?.[0]?.filePath || '/public/image/profile/default.jpg', // 프로필 이미지 경로
+            profileImagePath: post.user.files?.[0]?.filePath || '/image//profile/default.jpg', // 프로필 이미지 경로
             filePath: post.files?.[0]?.filePath || null, // 게시글에 첨부된 파일 경로
             commentsCount: post.commentCount // 댓글 수
         }));
@@ -90,7 +90,7 @@ export class PostService {
                 `CASE WHEN post.hits >= 1000000 THEN CONCAT(ROUND(post.hits / 1000000, 1), 'M') 
               WHEN post.hits >= 1000 THEN CONCAT(ROUND(post.hits / 1000, 1), 'K') 
               ELSE post.hits END`,
-                `COALESCE(userFile.filePath, '/public/image/profile/default.jpg')`
+                `COALESCE(userFile.filePath, '/image//profile/default.jpg')`
             ])
             .where('post.postId = :postId', { postId })
             .andWhere('post.deletedAt IS NULL')
@@ -111,7 +111,7 @@ export class PostService {
             createdAt: post.createdAt, // 생성 날짜
             updatedAt: post.updatedAt, // 수정 날짜
             deletedAt: post.deletedAt, // 삭제 날짜
-            profileImagePath: post.user.files?.[0]?.filePath || '/public/image/profile/default.jpg', // 프로필 이미지 경로
+            profileImagePath: post.user.files?.[0]?.filePath || '/image//profile/default.jpg', // 프로필 이미지 경로
             filePath: post.files?.[0]?.filePath || null, // 게시글에 첨부된 파일 경로
             commentsCount: post.commentCount // 댓글 수
         };

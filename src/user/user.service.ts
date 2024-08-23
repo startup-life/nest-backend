@@ -69,7 +69,7 @@ export class UserService {
         }
 
         if (user.fileId) user.profileImagePath = await this.getProfileImagePath(userId, user.fileId);
-        else user.profileImagePath = '/public/image/profile/default.png';
+        else user.profileImagePath = '/image//profile/default.jpg';
 
         delete user.password;
         return user;
