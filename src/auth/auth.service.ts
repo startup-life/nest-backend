@@ -31,9 +31,10 @@ export class AuthService {
 
         // 이메일로 사용자 조회
         const user = await this.userService.findByEmail(email);
+        if (!user) throw new NotFoundException('not found user');
 
         // 비밀번호 비교
-        if (!user || user.password !== password) throw new UnauthorizedException('invalid email or password');
+        if (user.password !== password) throw new UnauthorizedException('invalid email or password');
 
         // 프로필 이미지 경로 매핑
         user.profileImagePath = await this.getProfileImagePath(user.userId, user.fileId);
