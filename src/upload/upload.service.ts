@@ -7,7 +7,6 @@ export class UploadService {
     public static readonly PROFILE_IMAGE_PATH = './public/image/profile';
     public static readonly POST_IMAGE_PATH = './public/image/post';
 
-    // 서비스 코드
     uploadProfileFile(file: Express.Multer.File): string {
         if (!file) {
             throw new BadRequestException('Invalid file');
