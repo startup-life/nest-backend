@@ -14,7 +14,8 @@ async function bootstrap() {
   const PORT = configService.get<number>('BACKEND_PORT') || 3000;
 
   app.enableCors({
-    origin: '*',
+    origin: 'http://localhost:8080',  // 프론트엔드 주소
+    credentials: true,  // 쿠키 허용
   })
 
   app.useStaticAssets(join(__dirname, '..', 'public'));
