@@ -35,10 +35,11 @@ export class AuthService {
 
         // 이메일로 사용자 조회
         const user = await this.userService.findByEmail(email);
+        if (!user) throw new UnauthorizedException('invalid email or password');
 
         // 암호화 된 비밀번호 비교
         const validPassword = await bcrypt.compare(password, user.password);
-        if (!user || !validPassword) throw new UnauthorizedException('invalid email or password');
+        if (!validPassword) throw new UnauthorizedException('invalid email or password');
 
         // 프로필 이미지 경로 매핑
         user.profileImagePath = await this.getProfileImagePath(user.userId, user.fileId);
@@ -94,7 +95,7 @@ export class AuthService {
         }
         const getProfileImage = await this.fileService.getProfileImagePath(getProfileImagePathDto);
 
-        if (!getProfileImage) return '/public/image/profile/default.png';
+        if (!getProfileImage) return '/image/profile/default.jpg';
 
         return getProfileImage;
     }

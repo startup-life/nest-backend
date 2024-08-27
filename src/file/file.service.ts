@@ -22,7 +22,7 @@ export class FileService {
 
         if (file) return file.filePath;
 
-        return '/public/image/profile/default.png';
+        return '/image/profile/default.jpg';
     }
 
     async createProfileImage(createProfileImageDto: CreateProfileImageDto): Promise<File> {

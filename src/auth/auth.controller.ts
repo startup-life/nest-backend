@@ -1,4 +1,4 @@
-import {Controller, Post, Body, Get, UseGuards, Request} from '@nestjs/common';
+import {Controller, Post, Body, Get, UseGuards, Request, HttpCode} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {LoginUserDto} from "./dto/login-user.dto";
 import {SignUpUserDto} from "./dto/sign-up-user.dto";
@@ -11,6 +11,8 @@ export class AuthController {
     /**
      * 로그인
      * 회원가입
+     * 로그인 상태 확인
+     * 로그아웃
      */
 
     // 로그인
@@ -25,6 +27,7 @@ export class AuthController {
         return await this.authService.signUpUser(signUpUserDto);
     }
 
+    // 로그인 상태 확인
     @UseGuards(AuthGuard('jwt'))
     @Get('check')
     async checkAuth(@Request() request: any) {

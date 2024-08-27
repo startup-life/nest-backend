@@ -25,7 +25,7 @@ export class CommentService {
             .select([
                 'ct',
                 'ut.userId',
-                "COALESCE(ft.filePath, '/public/image/profile/default.jpg') AS profileImagePath",
+                "COALESCE(ft.filePath, '/image/profile/default.jpg') AS profileImagePath",
             ])
             .where('ct.post_id = :postId', { postId })
             .andWhere('ct.deleted_at IS NULL')

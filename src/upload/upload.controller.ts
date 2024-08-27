@@ -16,7 +16,9 @@ export class UploadController {
                 destination: UploadService.PROFILE_IMAGE_PATH,
                 filename: (request, file, cb) => {
                     const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-                    cb(null, `${file.fieldname}-${uniqueSuffix}${extname(file.originalname)}`);
+                    const filename = `${file.fieldname}-${uniqueSuffix}${extname(file.originalname)}`;
+                    file.filename = filename; // 파일 객체에 파일 이름을 저장
+                    cb(null, filename);
                 },
             }),
         }),
@@ -33,7 +35,9 @@ export class UploadController {
                 destination: UploadService.POST_IMAGE_PATH,
                 filename: (request, file, cb) => {
                     const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-                    cb(null, `${file.fieldname}-${uniqueSuffix}${extname(file.originalname)}`);
+                    const filename = `${file.fieldname}-${uniqueSuffix}${extname(file.originalname)}`;
+                    file.filename = filename; // 파일 객체에 파일 이름을 저장
+                    cb(null, filename);
                 },
             }),
         }),
