@@ -1,14 +1,14 @@
-name: Develop Branch Semantic Release
+name: Release Branch Semantic Release
 
 on:
   push:
     branches:
       - main
-      - develop
+      - release
   pull_request:
     branches:
       - main
-      - develop
+      - release
 
 jobs:
   semantic-release:
