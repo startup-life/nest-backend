@@ -5,7 +5,7 @@ on:
   push:
     branches:
       - main
-      - action-dev # test branch
+      - develop # test branch
   pull_request:
     branches:
       - main
