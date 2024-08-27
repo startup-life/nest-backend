@@ -38,6 +38,7 @@ lerna-debug.log*
 # dotenv environment variable files
 .env
 .env.*
+!.env.example
 # temp directory
 .temp
 .tmp
@@ -51,5 +52,5 @@ pids
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
-/public/image/post
-/public/image/profile/profileImage-*
+public/
+!public/image/profile/default.jpg
