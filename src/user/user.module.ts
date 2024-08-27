@@ -1,9 +1,9 @@
-import {forwardRef, Module} from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { UserService } from './user.service';
-import {FileModule} from "../file/file.module";
-import {PostModule} from "../post/post.module";
+import { FileModule } from '../file/file.module';
+import { PostModule } from '../post/post.module';
 
 @Module({
     imports: [

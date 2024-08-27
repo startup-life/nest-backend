@@ -1,8 +1,13 @@
-import {BadRequestException, Controller, Post, UploadedFile, UseInterceptors} from '@nestjs/common';
+import {
+    Controller,
+    Post,
+    UploadedFile,
+    UseInterceptors,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
-import {UploadService} from "./upload.service";
+import { UploadService } from './upload.service';
 
 @Controller('upload')
 export class UploadController {
