@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## [1.1.0](https://github.com/startup-life/nest-backend/compare/v1.0.0...v1.1.0) (2024-08-27)
+
+### 🚀 NEW FEATURES
+
+* .env.example 추가 ([71d59f6](https://github.com/startup-life/nest-backend/commit/71d59f68be6cca7fe2141cf9f6a7ebae689b6697))
+
 ## 1.0.0 (2024-08-27)
 
 ### 🚀 NEW FEATURES
