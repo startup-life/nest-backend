@@ -1,17 +1,16 @@
-import {Injectable, NotFoundException} from '@nestjs/common';
-import {User} from "./user.entity";
-import {Repository} from "typeorm";
-import {InjectRepository} from "@nestjs/typeorm";
-import {FileService} from "../file/file.service";
-import {UpdateUserDto} from "./dto/update-user.dto";
-import {UpdatePasswordDto} from "./dto/update-password.dto";
-import {CreateUserDto} from "./dto/create-user.dto";
-import {GetProfileImagePathDto} from "../file/dto/get-profile-image-path.dto";
-import {CreateProfileImageDto} from "../file/dto/create-profile-image.dto";
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { User } from './user.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { FileService } from '../file/file.service';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdatePasswordDto } from './dto/update-password.dto';
+import { CreateUserDto } from './dto/create-user.dto';
+import { GetProfileImagePathDto } from '../file/dto/get-profile-image-path.dto';
+import { CreateProfileImageDto } from '../file/dto/create-profile-image.dto';
 import * as bcrypt from 'bcrypt';
 
 const SALT_ROUNDS = 10;
-
 
 @Injectable()
 export class UserService {
@@ -37,7 +36,16 @@ export class UserService {
         return await this.userRepository.findOne({
             where: { email, deletedAt: null },
             withDeleted: false,
-            select: ['userId', 'email', 'password', 'nickname', 'fileId', 'createdAt', 'updatedAt', 'deletedAt'], // 비밀번호 포함
+            select: [
+                'userId',
+                'email',
+                'password',
+                'nickname',
+                'fileId',
+                'createdAt',
+                'updatedAt',
+                'deletedAt',
+            ], // 비밀번호 포함
         });
     }
 
@@ -54,7 +62,10 @@ export class UserService {
 
         // 프로필 이미지 경로가 있는 경우
         if (profileImagePath) {
-            const profileImage = await this.createProfileImage(user.userId, profileImagePath);
+            const profileImage = await this.createProfileImage(
+                user.userId,
+                profileImagePath,
+            );
             user.fileId = profileImage.fileId;
             await this.userRepository.save(user);
         }
@@ -66,13 +77,17 @@ export class UserService {
 
     // 유저 정보 가져오기
     async getUserById(userId: number): Promise<any> {
-        const user = await this.userRepository.findOne({where: {userId}});
+        const user = await this.userRepository.findOne({ where: { userId } });
 
         if (!user) {
             throw new NotFoundException('not found user');
         }
 
-        if (user.fileId) user.profileImagePath = await this.getProfileImagePath(userId, user.fileId);
+        if (user.fileId)
+            user.profileImagePath = await this.getProfileImagePath(
+                userId,
+                user.fileId,
+            );
         else user.profileImagePath = '/image/profile/default.jpg';
 
         delete user.password;
@@ -80,7 +95,10 @@ export class UserService {
     }
 
     // 회원 정보 수정
-    async updateUser(userId: number, updateUserDto: UpdateUserDto): Promise<User> {
+    async updateUser(
+        userId: number,
+        updateUserDto: UpdateUserDto,
+    ): Promise<User> {
         const { nickname, profileImagePath } = updateUserDto;
 
         // 유저 정보 조회
@@ -97,7 +115,10 @@ export class UserService {
             user.fileId = null;
         } else if (profileImagePath !== user.profileImagePath) {
             // 새로운 프로필 이미지 경로 저장
-            const profileImage = await this.createProfileImage(user.userId, profileImagePath);
+            const profileImage = await this.createProfileImage(
+                user.userId,
+                profileImagePath,
+            );
             user.fileId = profileImage.fileId;
         }
 
@@ -108,14 +129,19 @@ export class UserService {
     }
 
     // 비밀번호 변경
-    async updatePassword(userId: number, updatePasswordDto: UpdatePasswordDto): Promise<any> {
+    async updatePassword(
+        userId: number,
+        updatePasswordDto: UpdatePasswordDto,
+    ): Promise<any> {
         const { password } = updatePasswordDto;
 
         // 비밀번호 암호화
         const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
         // 비밀번호 변경
-        const changePass = await this.userRepository.update(userId, { password: hashedPassword });
+        const changePass = await this.userRepository.update(userId, {
+            password: hashedPassword,
+        });
         if (!changePass) throw new NotFoundException('not found user');
 
         return await this.getUserById(userId);
@@ -149,15 +175,23 @@ export class UserService {
 
     // private method
 
-    private async getProfileImagePath(userId: number, fileId: number): Promise<any> {
+    private async getProfileImagePath(
+        userId: number,
+        fileId: number,
+    ): Promise<any> {
         const getProfileImagePathDto: GetProfileImagePathDto = {
             userId,
             fileId,
         };
-        return await this.fileService.getProfileImagePath(getProfileImagePathDto);
+        return await this.fileService.getProfileImagePath(
+            getProfileImagePathDto,
+        );
     }
 
-    private async createProfileImage(userId: number, filePath: string): Promise<any> {
+    private async createProfileImage(
+        userId: number,
+        filePath: string,
+    ): Promise<any> {
         const createProfileImageDto: CreateProfileImageDto = {
             userId,
             filePath,
@@ -165,4 +199,3 @@ export class UserService {
         return await this.fileService.createProfileImage(createProfileImageDto);
     }
 }
-

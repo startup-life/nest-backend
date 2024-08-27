@@ -1,4 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+    Entity,
+    Column,
+    PrimaryGeneratedColumn,
+    ManyToOne,
+    JoinColumn,
+} from 'typeorm';
 import { User } from '../user/user.entity';
 import { Post } from '../post/post.entity';
 
@@ -19,20 +25,30 @@ export class File {
     @Column({ type: 'int', unsigned: true, name: 'file_category' })
     fileCategory: number;
 
-    @Column({ type: 'timestamp', name: 'created_at', nullable: true, default: () => 'CURRENT_TIMESTAMP' })
+    @Column({
+        type: 'timestamp',
+        name: 'created_at',
+        nullable: true,
+        default: () => 'CURRENT_TIMESTAMP',
+    })
     createdAt: Date;
 
-    @Column({ type: 'timestamp', name: 'updated_at', nullable: true, default: () => 'CURRENT_TIMESTAMP' })
+    @Column({
+        type: 'timestamp',
+        name: 'updated_at',
+        nullable: true,
+        default: () => 'CURRENT_TIMESTAMP',
+    })
     updatedAt: Date;
 
     @Column({ type: 'timestamp', name: 'deleted_at', nullable: true })
     deletedAt: Date;
 
-    @ManyToOne(() => User, user => user.files)
+    @ManyToOne(() => User, (user) => user.files)
     @JoinColumn({ name: 'user_id' })
     user: User;
 
-    @ManyToOne(() => Post, post => post.files)
+    @ManyToOne(() => Post, (post) => post.files)
     @JoinColumn({ name: 'post_id' })
     post: Post;
 }

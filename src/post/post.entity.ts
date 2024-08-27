@@ -1,4 +1,12 @@
-import {Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, JoinColumn, DeleteDateColumn} from 'typeorm';
+import {
+    Entity,
+    Column,
+    PrimaryGeneratedColumn,
+    ManyToOne,
+    OneToMany,
+    JoinColumn,
+    DeleteDateColumn,
+} from 'typeorm';
 import { User } from '../user/user.entity';
 import { File } from '../file/file.entity';
 import { Comment } from '../comment/comment.entity';
@@ -32,23 +40,32 @@ export class Post {
     @Column({ type: 'int', unsigned: true, name: 'hits', default: 0 })
     hits: number;
 
-    @Column({ type: 'timestamp', name: 'created_at', nullable: true, default: () => 'CURRENT_TIMESTAMP' })
+    @Column({
+        type: 'timestamp',
+        name: 'created_at',
+        nullable: true,
+        default: () => 'CURRENT_TIMESTAMP',
+    })
     createdAt: Date;
 
-    @Column({ type: 'timestamp', name: 'updated_at', nullable: true, default: () => 'CURRENT_TIMESTAMP' })
+    @Column({
+        type: 'timestamp',
+        name: 'updated_at',
+        nullable: true,
+        default: () => 'CURRENT_TIMESTAMP',
+    })
     updatedAt: Date;
 
     @DeleteDateColumn({ type: 'timestamp', name: 'deleted_at', nullable: true })
     deletedAt: Date;
 
-    @ManyToOne(() => User, user => user.posts)
+    @ManyToOne(() => User, (user) => user.posts)
     @JoinColumn({ name: 'user_id' })
     user: User;
 
-    @OneToMany(() => File, file => file.post)
+    @OneToMany(() => File, (file) => file.post)
     files: File[];
 
-    @OneToMany(() => Comment, comment => comment.post)
+    @OneToMany(() => Comment, (comment) => comment.post)
     comments: Comment[];
 }
-

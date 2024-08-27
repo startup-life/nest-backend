@@ -10,12 +10,13 @@ import {
     Post,
     Put,
     UseGuards,
-    Request, Query
+    Request,
+    Query,
 } from '@nestjs/common';
-import {PostService} from './post.service';
-import {AddPostDto} from "./dto/add-post.dto";
-import {UpdatePostDto} from "./dto/update-post.dto";
-import {AuthGuard} from "@nestjs/passport";
+import { PostService } from './post.service';
+import { AddPostDto } from './dto/add-post.dto';
+import { UpdatePostDto } from './dto/update-post.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('post')
 export class PostController {
@@ -40,7 +41,9 @@ export class PostController {
 
     @Get(':post_id')
     @UseGuards(AuthGuard('jwt'))
-    async getPostById(@Param('post_id', ParseIntPipe) postId: number): Promise<any> {
+    async getPostById(
+        @Param('post_id', ParseIntPipe) postId: number,
+    ): Promise<any> {
         if (!postId) throw new BadRequestException('invalid postId');
 
         return await this.postService.getPostById(postId);
@@ -67,7 +70,12 @@ export class PostController {
         const { userId, nickname } = request.user;
         if (!postId) throw new BadRequestException('invalid postId');
 
-        return await this.postService.updatePost(postId, userId, nickname, updatePostDto);
+        return await this.postService.updatePost(
+            postId,
+            userId,
+            nickname,
+            updatePostDto,
+        );
     }
 
     @Delete(':post_id')

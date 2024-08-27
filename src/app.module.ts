@@ -6,8 +6,8 @@ import { PostController } from './post/post.controller';
 import { CommentController } from './comment/comment.controller';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
-import {ThrottlerGuard, ThrottlerModule} from "@nestjs/throttler";
-import {APP_GUARD} from "@nestjs/core";
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 import { FileController } from './file/file.controller';
 import { AuthController } from './auth/auth.controller';
 import { UserModule } from './user/user.module';
@@ -20,30 +20,40 @@ import { UploadService } from './upload/upload.service';
 import { UploadModule } from './upload/upload.module';
 
 @Module({
-  imports: [
-      ConfigModule.forRoot({
-        envFilePath: '.env.dev',
-      }),
-      DatabaseModule,
-      ThrottlerModule.forRoot([{
-          ttl: 10, // 10초 동안
-          limit: 100, // 최대 100번의 요청 허용
-      }]),
-      UserModule,
-      AuthModule,
-      FileModule,
-      PostModule,
-      CommentModule,
-      UploadModule,
-  ],
-  controllers: [AppController, UserController, PostController, CommentController, FileController, AuthController, UploadController],
-  providers: [
-      AppService,
-      {
-          provide: APP_GUARD,
-          useClass: ThrottlerGuard,
-      },
-      UploadService,
-  ],
+    imports: [
+        ConfigModule.forRoot({
+            envFilePath: '.env.dev',
+        }),
+        DatabaseModule,
+        ThrottlerModule.forRoot([
+            {
+                ttl: 10, // 10초 동안
+                limit: 100, // 최대 100번의 요청 허용
+            },
+        ]),
+        UserModule,
+        AuthModule,
+        FileModule,
+        PostModule,
+        CommentModule,
+        UploadModule,
+    ],
+    controllers: [
+        AppController,
+        UserController,
+        PostController,
+        CommentController,
+        FileController,
+        AuthController,
+        UploadController,
+    ],
+    providers: [
+        AppService,
+        {
+            provide: APP_GUARD,
+            useClass: ThrottlerGuard,
+        },
+        UploadService,
+    ],
 })
 export class AppModule {}

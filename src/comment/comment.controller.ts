@@ -8,12 +8,13 @@ import {
     ParseIntPipe,
     Post,
     Put,
-    UseGuards, Request
+    UseGuards,
+    Request,
 } from '@nestjs/common';
-import {CommentService} from "./comment.service";
-import {AddCommentDto} from "./dto/add-comment.dto";
-import {UpdateCommentDto} from "./dto/update-comment.dto";
-import {AuthGuard} from "@nestjs/passport";
+import { CommentService } from './comment.service';
+import { AddCommentDto } from './dto/add-comment.dto';
+import { UpdateCommentDto } from './dto/update-comment.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('comment')
 export class CommentController {
@@ -21,7 +22,9 @@ export class CommentController {
 
     @Get('post/:post_id')
     @UseGuards(AuthGuard('jwt'))
-    async getAllComments(@Param('post_id', ParseIntPipe) postId: number): Promise<any[]> {
+    async getAllComments(
+        @Param('post_id', ParseIntPipe) postId: number,
+    ): Promise<any[]> {
         if (!postId) throw new BadRequestException('invalid postId');
 
         return await this.commentService.getAllComments(postId);
@@ -37,7 +40,12 @@ export class CommentController {
         const { userId, nickname } = request.user;
         if (!postId) throw new BadRequestException('invalid postId');
 
-        return await this.commentService.addComment(postId, userId, nickname, addCommentDto);
+        return await this.commentService.addComment(
+            postId,
+            userId,
+            nickname,
+            addCommentDto,
+        );
     }
 
     @Put('post/:post_id/:comment_id')
@@ -52,7 +60,13 @@ export class CommentController {
         if (!postId) throw new BadRequestException('invalid postId');
         if (!commentId) throw new BadRequestException('invalid commentId');
 
-        return await this.commentService.updateComment(postId, commentId, userId, nickname, updateCommentDto);
+        return await this.commentService.updateComment(
+            postId,
+            commentId,
+            userId,
+            nickname,
+            updateCommentDto,
+        );
     }
 
     @Delete('post/:post_id/:comment_id')
@@ -62,10 +76,14 @@ export class CommentController {
         @Param('post_id', ParseIntPipe) postId: number,
         @Param('comment_id', ParseIntPipe) commentId: number,
     ): Promise<any> {
-        const { userId } = request.user
+        const { userId } = request.user;
         if (!postId) throw new BadRequestException('invalid postId');
         if (!commentId) throw new BadRequestException('invalid commentId');
 
-        return await this.commentService.softDeleteComment(postId, userId, commentId);
+        return await this.commentService.softDeleteComment(
+            postId,
+            userId,
+            commentId,
+        );
     }
 }

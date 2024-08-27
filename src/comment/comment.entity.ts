@@ -1,4 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, DeleteDateColumn } from 'typeorm';
+import {
+    Entity,
+    Column,
+    PrimaryGeneratedColumn,
+    ManyToOne,
+    JoinColumn,
+    DeleteDateColumn,
+} from 'typeorm';
 import { Post } from '../post/post.entity';
 import { User } from '../user/user.entity';
 
@@ -19,20 +26,30 @@ export class Comment {
     @Column({ type: 'varchar', length: 45, name: 'nickname' })
     nickname: string;
 
-    @Column({ type: 'timestamp', name: 'created_at', nullable: true, default: () => 'CURRENT_TIMESTAMP' })
+    @Column({
+        type: 'timestamp',
+        name: 'created_at',
+        nullable: true,
+        default: () => 'CURRENT_TIMESTAMP',
+    })
     createdAt: Date;
 
-    @Column({ type: 'timestamp', name: 'updated_at', nullable: true, default: () => 'CURRENT_TIMESTAMP' })
+    @Column({
+        type: 'timestamp',
+        name: 'updated_at',
+        nullable: true,
+        default: () => 'CURRENT_TIMESTAMP',
+    })
     updatedAt: Date;
 
     @DeleteDateColumn({ type: 'timestamp', name: 'deleted_at', nullable: true })
     deletedAt?: Date;
 
-    @ManyToOne(() => Post, post => post.comments)
+    @ManyToOne(() => Post, (post) => post.comments)
     @JoinColumn({ name: 'post_id' })
     post: Post;
 
-    @ManyToOne(() => User, user => user.comments)
+    @ManyToOne(() => User, (user) => user.comments)
     @JoinColumn({ name: 'user_id' })
     user: User;
 }
