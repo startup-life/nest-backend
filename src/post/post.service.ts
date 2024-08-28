@@ -58,12 +58,14 @@ export class PostService {
             .getMany();
 
         // foreach로 로그
-        /*posts.forEach(post => {
+        /*
+        posts.forEach(post => {
             console.log(post);
             console.log(post.user);
             console.log(post.user.files);
             console.log(post.files);
-        });*/
+        });
+        */
 
         if (!posts) return [];
 
