@@ -8,12 +8,19 @@ import {UpdatePasswordDto} from "./dto/update-password.dto";
 import {CreateUserDto} from "./dto/create-user.dto";
 import {GetProfileImagePathDto} from "../file/dto/get-profile-image-path.dto";
 import {CreateProfileImageDto} from "../file/dto/create-profile-image.dto";
+import {Post} from "../post/post.entity";
+import {Comment} from "../comment/comment.entity";
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
+        @InjectRepository(Post)
+        private readonly postRepository: Repository<Post>,
+        @InjectRepository(Comment)
+        private readonly commentRepository: Repository<Comment>,
+
         private readonly fileService: FileService,
     ) {}
 
@@ -118,6 +125,11 @@ export class UserService {
     async softDeleteUser(userId: number): Promise<any> {
         const deleteUser = await this.userRepository.softDelete(userId);
         if (!deleteUser) throw new NotFoundException('not found user');
+
+        await Promise.all([
+            this.postRepository.softDelete({ userId }),
+            this.commentRepository.softDelete({ userId }),
+        ]);
 
         return deleteUser;
     }
