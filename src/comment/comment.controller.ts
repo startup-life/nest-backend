@@ -10,6 +10,7 @@ import {
     Put,
     UseGuards,
     Request,
+    HttpCode,
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { AddCommentDto } from './dto/add-comment.dto';
@@ -71,6 +72,7 @@ export class CommentController {
 
     @Delete('post/:post_id/:comment_id')
     @UseGuards(AuthGuard('jwt'))
+    @HttpCode(204)
     async softDeleteComment(
         @Request() request: any,
         @Param('post_id', ParseIntPipe) postId: number,
