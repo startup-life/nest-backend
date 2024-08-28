@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## [1.2.1](https://github.com/startup-life/nest-backend/compare/v1.2.0...v1.2.1) (2024-08-28)
+
+### 🐛 BUG FIXES
+
+* app 컨트롤러 테스트 코드의 hello world 관련 구버전 테스트 코드 제거 ([1180415](https://github.com/startup-life/nest-backend/commit/118041506e2dedac950b26abb6de915bcb85892b))
+
 ## [1.2.0](https://github.com/startup-life/nest-backend/compare/v1.1.0...v1.2.0) (2024-08-28)
 
 ### 🚀 NEW FEATURES
