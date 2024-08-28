@@ -3,7 +3,7 @@ import {
     Body,
     Controller,
     Delete,
-    Get,
+    Get, HttpCode,
     NotFoundException,
     Param,
     ParseIntPipe,
@@ -56,6 +56,7 @@ export class CommentController {
     }
 
     @Delete('post/:post_id/:comment_id')
+    @HttpCode(204)
     async softDeleteComment(
         @Param('post_id', ParseIntPipe) postId: number,
         @Param('comment_id', ParseIntPipe) commentId: number,
