@@ -68,7 +68,7 @@ export class PostService {
             createdAt: post.createdAt, // 생성 날짜
             updatedAt: post.updatedAt, // 수정 날짜
             deletedAt: post.deletedAt, // 삭제 날짜
-            profileImagePath: post.user.files?.[0]?.filePath || '/image/profile/default.jpg', // 프로필 이미지 경로
+            profileImagePath: post.user.files?.filePath || '/image/profile/default.jpg', // 프로필 이미지 경로
             filePath: post.files?.[0]?.filePath || null, // 게시글에 첨부된 파일 경로
             commentsCount: post.commentCount // 댓글 수
         }));
@@ -111,7 +111,7 @@ export class PostService {
             createdAt: post.createdAt, // 생성 날짜
             updatedAt: post.updatedAt, // 수정 날짜
             deletedAt: post.deletedAt, // 삭제 날짜
-            profileImagePath: post.user.files?.[0]?.filePath || '/image/profile/default.jpg', // 프로필 이미지 경로
+            profileImagePath: post.user.files?.filePath || '/image/profile/default.jpg', // 프로필 이미지 경로
             filePath: post.files?.[0]?.filePath || null, // 게시글에 첨부된 파일 경로
             commentsCount: post.commentCount // 댓글 수
         };
