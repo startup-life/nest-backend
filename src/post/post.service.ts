@@ -178,6 +178,15 @@ export class PostService {
         return deletePost;
     }
 
+    async incrementPostViews(postId: number): Promise<void> {
+        await this.postRepository
+            .createQueryBuilder()
+            .update(Post)
+            .set({ hits: () => 'hits + 1' })
+            .where('postId = :postId', { postId })
+            .execute();
+    }
+
     // private method
 
     private async getNewPostFileId(userId: number, postId: number, filePath: string): Promise<any> {
