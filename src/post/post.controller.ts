@@ -40,6 +40,7 @@ export class PostController {
     async getPostById(@Param('post_id', ParseIntPipe) postId: number): Promise<any> {
         if (!postId) throw new BadRequestException('invalid postId');
 
+        await this.postService.incrementPostViews(postId);
         return await this.postService.getPostById(postId);
     }
 
