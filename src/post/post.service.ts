@@ -58,12 +58,14 @@ export class PostService {
             .getMany();
 
         // foreach로 로그
-        /*posts.forEach(post => {
+        /*
+        posts.forEach(post => {
             console.log(post);
             console.log(post.user);
             console.log(post.user.files);
             console.log(post.files);
-        });*/
+        });
+        */
 
         if (!posts) return [];
 
@@ -81,7 +83,7 @@ export class PostService {
             updatedAt: post.updatedAt, // 수정 날짜
             deletedAt: post.deletedAt, // 삭제 날짜
             profileImagePath:
-                post.user.files?.[0]?.filePath || '/image/profile/default.jpg', // 프로필 이미지 경로
+                post.user.files?.filePath || '/image/profile/default.jpg', // 프로필 이미지 경로
             filePath: post.files?.[0]?.filePath || null, // 게시글에 첨부된 파일 경로
             commentsCount: post.commentCount, // 댓글 수
         }));
@@ -135,7 +137,7 @@ export class PostService {
             updatedAt: post.updatedAt, // 수정 날짜
             deletedAt: post.deletedAt, // 삭제 날짜
             profileImagePath:
-                post.user.files?.[0]?.filePath || '/image/profile/default.jpg', // 프로필 이미지 경로
+                post.user.files?.filePath || '/image/profile/default.jpg', // 프로필 이미지 경로
             filePath: post.files?.[0]?.filePath || null, // 게시글에 첨부된 파일 경로
             commentsCount: post.commentCount, // 댓글 수
         };
@@ -236,6 +238,15 @@ export class PostService {
         if (!deletePost) throw new NotFoundException('Post not found');
 
         return deletePost;
+    }
+
+    async incrementPostViews(postId: number): Promise<void> {
+        await this.postRepository
+            .createQueryBuilder()
+            .update(Post)
+            .set({ hits: () => 'hits + 1' })
+            .where('postId = :postId', { postId })
+            .execute();
     }
 
     // private method
