@@ -40,7 +40,7 @@ export class SignUpUserDto {
     @ApiProperty({
         type: String,
         description: '프로필 이미지 경로',
-        example: 'profile-image-path',
+        example: 'image/profile/test.jpg',
         required: false,
     })
     @IsOptional()

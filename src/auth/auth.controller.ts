@@ -11,8 +11,8 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { SignUpUserDto } from './dto/sign-up-user.dto';
 import { AuthGuard } from '@nestjs/passport';
 import {
-    ApiBadRequestResponse,
-    ApiInternalServerErrorResponse,
+    ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiCreatedResponse,
+    ApiInternalServerErrorResponse, ApiOkResponse,
     ApiResponse,
     ApiTags,
     ApiUnauthorizedResponse,
@@ -32,19 +32,22 @@ export class AuthController {
 
     // 로그인
     @Post('login')
-    @ApiResponse({
-        status: 200,
+    @ApiBody({ type: LoginUserDto, description: '로그인 요청 데이터' })
+    @ApiOkResponse({
         description: '로그인 성공',
-        example: {
-            userId: 1,
-            email: 'test@test.com',
-            nickname: 'test1234',
-            fileId: 1,
-            createdAt: '0000-00-00T00:00:00.000Z',
-            updatedAt: '0000-00-00T00:00:00.000Z',
-            deletedAt: null,
-            profileImagePath: 'profile-image-path',
-            accessToken: 'access-token',
+        schema: {
+            type: 'object',
+            properties: {
+                userId: { type: 'integer' },
+                email: { type: 'string' },
+                nickname: { type: 'string' },
+                fileId: { type: 'integer' },
+                createdAt: { type: 'string', format: 'date-time' },
+                updatedAt: { type: 'string', format: 'date-time' },
+                deletedAt: { type: 'string', nullable: true },
+                profileImagePath: { type: 'string' },
+                accessToken: { type: 'string' },
+            },
         },
     })
     @ApiBadRequestResponse({ description: '잘못된 이메일 또는 비밀번호' })
@@ -55,19 +58,21 @@ export class AuthController {
 
     // 회원가입
     @Post('signup')
-    @ApiResponse({
-        status: 201,
+    @ApiBody({ type: SignUpUserDto, description: '회원가입 요청 데이터' })
+    @ApiCreatedResponse({
         description: '회원가입 성공',
-        example: {
-            userId: 1,
-            email: 'test@test.com',
-            nickname: 'test1234',
-            fileId: 1,
-            sessionId: null,
-            createdAt: '0000-00-00T00:00:00.000Z',
-            updatedAt: '0000-00-00T00:00:00.000Z',
-            deletedAt: null,
-        },
+        schema: {
+            type: 'object',
+            properties: {
+                userId: {type: 'integer'},
+                email: {type: 'string'},
+                nickname: {type: 'string'},
+                fileId: {type: 'integer'},
+                createdAt: {type: 'string', format: 'date-time'},
+                updatedAt: {type: 'string', format: 'date-time'},
+                deletedAt: {type: 'string', nullable: true},
+            },
+        }
     })
     @ApiBadRequestResponse({ description: '이미 존재하는 이메일 또는 닉네임' })
     @ApiInternalServerErrorResponse({ description: '회원가입 실패' })
@@ -78,20 +83,23 @@ export class AuthController {
     // 로그인 상태 확인
     @UseGuards(AuthGuard('jwt'))
     @Get('check')
-    @ApiResponse({
-        status: 200,
+    @ApiBearerAuth()
+    @ApiOkResponse({
         description: '로그인 상태 확인 성공',
-        example: {
-            userId: 1,
-            email: 'test@test.com',
-            nickname: 'test1234',
-            fileId: 1,
-            sessionId: 'session-id',
-            createdAt: '0000-00-00T00:00:00.000Z',
-            updatedAt: '0000-00-00T00:00:00.000Z',
-            deletedAt: null,
-            profileImagePath: 'profile-image-path',
-        },
+        schema: {
+            type: 'object',
+            properties: {
+                userId: {type: 'integer'},
+                email: {type: 'string'},
+                nickname: {type: 'string'},
+                fileId: {type: 'integer'},
+                sessionId: {type: 'string'},
+                createdAt: {type: 'string', format: 'date-time'},
+                updatedAt: {type: 'string', format: 'date-time'},
+                deletedAt: {type: 'string', nullable: true},
+                profileImagePath: {type: 'string'},
+            },
+        }
     })
     @ApiUnauthorizedResponse({ description: '로그인 상태 확인 실패' })
     async checkAuth(@Request() request: any) {
