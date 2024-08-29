@@ -82,26 +82,20 @@ export class UserController {
         content: {
             'application/json': {
                 example: {
-                    summary: 'userId 파라미터가 없음',
-                    value: {
-                        message: 'invalid userId',
-                        error: 'Bad Request',
-                        statusCode: 400,
-                    },
+                    message: 'invalid userId',
+                    error: 'Bad Request',
+                    statusCode: 400,
                 },
             },
         },
     })
     @ApiUnauthorizedResponse({
-        description: '유효한 토큰이 없음',
+        description: '인증되지 않은 사용자',
         content: {
             'application/json': {
                 example: {
-                    summary: '토큰 인증 실패',
-                    value: {
-                        message: 'Unauthorized',
-                        statusCode: 401,
-                    },
+                    message: 'Unauthorized',
+                    statusCode: 401,
                 },
             },
         },
@@ -111,12 +105,9 @@ export class UserController {
         content: {
             'application/json': {
                 example: {
-                    summary: '유저 정보를 찾을 수 없음',
-                    value: {
-                        message: 'not found user',
-                        error: 'Not Found',
-                        statusCode: 404,
-                    },
+                    message: 'not found user',
+                    error: 'Not Found',
+                    statusCode: 404,
                 },
             },
         },
@@ -199,17 +190,25 @@ export class UserController {
             },
         },
     })
+    @ApiUnauthorizedResponse({
+        description: '인증되지 않은 사용자',
+        content: {
+            'application/json': {
+                example: {
+                    message: 'Unauthorized',
+                    statusCode: 401,
+                },
+            },
+        },
+    })
     @ApiNotFoundResponse({
         description: '유저 정보 없음',
         content: {
             'application/json': {
                 example: {
-                    summary: '유저 정보를 찾을 수 없음',
-                    value: {
-                        message: 'not found user',
-                        error: 'Not Found',
-                        statusCode: 404,
-                    },
+                    message: 'not found user',
+                    error: 'Not Found',
+                    statusCode: 404,
                 },
             },
         },
@@ -287,17 +286,25 @@ export class UserController {
             },
         },
     })
+    @ApiUnauthorizedResponse({
+        description: '인증되지 않은 사용자',
+        content: {
+            'application/json': {
+                example: {
+                    message: 'Unauthorized',
+                    statusCode: 401,
+                },
+            },
+        },
+    })
     @ApiNotFoundResponse({
         description: '유저 정보 없음',
         content: {
             'application/json': {
                 example: {
-                    summary: '유저 정보를 찾을 수 없음',
-                    value: {
-                        message: 'not found user',
-                        error: 'Not Found',
-                        statusCode: 404,
-                    },
+                    message: 'not found user',
+                    error: 'Not Found',
+                    statusCode: 404,
                 },
             },
         },
@@ -323,12 +330,20 @@ export class UserController {
         content: {
             'application/json': {
                 example: {
-                    summary: 'userId 파라미터가 없음',
-                    value: {
-                        message: 'invalid userId',
-                        error: 'Bad Request',
-                        statusCode: 400,
-                    },
+                    message: 'invalid userId',
+                    error: 'Bad Request',
+                    statusCode: 400,
+                },
+            },
+        },
+    })
+    @ApiUnauthorizedResponse({
+        description: '인증되지 않은 사용자',
+        content: {
+            'application/json': {
+                example: {
+                    message: 'Unauthorized',
+                    statusCode: 401,
                 },
             },
         },
@@ -338,12 +353,9 @@ export class UserController {
         content: {
             'application/json': {
                 example: {
-                    summary: '유저 정보를 찾을 수 없음',
-                    value: {
-                        message: 'not found user',
-                        error: 'Not Found',
-                        statusCode: 404,
-                    },
+                    message: 'not found user',
+                    error: 'Not Found',
+                    statusCode: 404,
                 },
             },
         },
@@ -374,12 +386,9 @@ export class UserController {
         content: {
             'application/json': {
                 example: {
-                    summary: '이메일이 없음',
-                    value: {
-                        message: 'email is required',
-                        error: 'Bad Request',
-                        statusCode: 400,
-                    },
+                    message: 'email is required',
+                    error: 'Bad Request',
+                    statusCode: 400,
                 },
             },
         },
@@ -405,12 +414,9 @@ export class UserController {
         content: {
             'application/json': {
                 example: {
-                    summary: '닉네임이 없음',
-                    value: {
-                        message: 'nickname is required',
-                        error: 'Bad Request',
-                        statusCode: 400,
-                    },
+                    message: 'nickname is required',
+                    error: 'Bad Request',
+                    statusCode: 400,
                 },
             },
         },
