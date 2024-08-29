@@ -11,8 +11,12 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { SignUpUserDto } from './dto/sign-up-user.dto';
 import { AuthGuard } from '@nestjs/passport';
 import {
-    ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiCreatedResponse,
-    ApiInternalServerErrorResponse, ApiOkResponse,
+    ApiBadRequestResponse,
+    ApiBearerAuth,
+    ApiBody,
+    ApiCreatedResponse,
+    ApiInternalServerErrorResponse,
+    ApiOkResponse,
     ApiResponse,
     ApiTags,
     ApiUnauthorizedResponse,
@@ -64,15 +68,15 @@ export class AuthController {
         schema: {
             type: 'object',
             properties: {
-                userId: {type: 'integer'},
-                email: {type: 'string'},
-                nickname: {type: 'string'},
-                fileId: {type: 'integer'},
-                createdAt: {type: 'string', format: 'date-time'},
-                updatedAt: {type: 'string', format: 'date-time'},
-                deletedAt: {type: 'string', nullable: true},
+                userId: { type: 'integer' },
+                email: { type: 'string' },
+                nickname: { type: 'string' },
+                fileId: { type: 'integer' },
+                createdAt: { type: 'string', format: 'date-time' },
+                updatedAt: { type: 'string', format: 'date-time' },
+                deletedAt: { type: 'string', nullable: true },
             },
-        }
+        },
     })
     @ApiBadRequestResponse({ description: '이미 존재하는 이메일 또는 닉네임' })
     @ApiInternalServerErrorResponse({ description: '회원가입 실패' })
@@ -89,17 +93,17 @@ export class AuthController {
         schema: {
             type: 'object',
             properties: {
-                userId: {type: 'integer'},
-                email: {type: 'string'},
-                nickname: {type: 'string'},
-                fileId: {type: 'integer'},
-                sessionId: {type: 'string'},
-                createdAt: {type: 'string', format: 'date-time'},
-                updatedAt: {type: 'string', format: 'date-time'},
-                deletedAt: {type: 'string', nullable: true},
-                profileImagePath: {type: 'string'},
+                userId: { type: 'integer' },
+                email: { type: 'string' },
+                nickname: { type: 'string' },
+                fileId: { type: 'integer' },
+                sessionId: { type: 'string' },
+                createdAt: { type: 'string', format: 'date-time' },
+                updatedAt: { type: 'string', format: 'date-time' },
+                deletedAt: { type: 'string', nullable: true },
+                profileImagePath: { type: 'string' },
             },
-        }
+        },
     })
     @ApiUnauthorizedResponse({ description: '로그인 상태 확인 실패' })
     async checkAuth(@Request() request: any) {
