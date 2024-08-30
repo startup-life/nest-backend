@@ -35,6 +35,8 @@ export class PostController {
         @Query('offset') offset: number,
         @Query('limit') limit: number,
     ): Promise<any[]> {
+        if (!offset || !limit)
+            throw new BadRequestException('invalid offset or limit');
         return await this.postService.getAllPosts(offset, limit);
     }
 
