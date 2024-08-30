@@ -42,7 +42,6 @@ export class CommentController {
         name: 'post_id',
         required: true,
         description: '게시글 ID',
-        schema: { type: 'integer' },
     })
     @ApiOkResponse({
         description: '게시글의 댓글 목록 조회 성공',
@@ -120,12 +119,10 @@ export class CommentController {
         name: 'post_id',
         required: true,
         description: '게시글 ID',
-        schema: { type: 'integer' },
     })
     @ApiBody({
         type: AddCommentDto,
         description: '댓글 추가 요청 데이터',
-        required: true,
     })
     @ApiCreatedResponse({
         description: '댓글 추가 성공',
@@ -228,18 +225,15 @@ export class CommentController {
         name: 'post_id',
         required: true,
         description: '게시글 ID',
-        schema: { type: 'integer' },
     })
     @ApiParam({
         name: 'comment_id',
         required: true,
         description: '댓글 ID',
-        schema: { type: 'integer' },
     })
     @ApiBody({
         type: UpdateCommentDto,
         description: '댓글 수정 요청 데이터',
-        required: true,
     })
     @ApiOkResponse({
         description: '댓글 수정 완료',
@@ -354,13 +348,11 @@ export class CommentController {
         name: 'post_id',
         required: true,
         description: '게시글 ID',
-        schema: { type: 'integer' },
     })
     @ApiParam({
         name: 'comment_id',
         required: true,
         description: '댓글 ID',
-        schema: { type: 'integer' },
     })
     @ApiNoContentResponse({
         description: '댓글 삭제 성공',
