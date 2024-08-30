@@ -6,6 +6,7 @@ import { TimeoutInterceptor } from './common/interceptor/timeout.interceptor';
 import helmet from 'helmet';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
     const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -27,6 +28,16 @@ async function bootstrap() {
 
     // 글로벌 ValidationPipe 설정 (모든 DTO에서 class-validator를 사용해 유효성 검사 자동 적용)
     app.useGlobalPipes(new ValidationPipe());
+
+    // Swagger
+    const swaggerConfig = new DocumentBuilder()
+        .setTitle('NestJS Edu Community Backend API')
+        .setDescription('NestJS 기반 Edu Community 프로젝트 백엔드 API 문서')
+        .setVersion('1.0')
+        .addTag('edu-community')
+        .build();
+    const document = SwaggerModule.createDocument(app, swaggerConfig);
+    SwaggerModule.setup('api', app, document);
 
     await app.listen(PORT);
     console.log(`[HTTP] app is running on: http://localhost:${PORT}`);
