@@ -1,5 +1,26 @@
 # CHANGELOG
 
+## [1.3.0](https://github.com/startup-life/nest-backend/compare/v1.2.1...v1.3.0) (2024-08-30)
+
+### 🚀 NEW FEATURES
+
+* auth 디렉토리에 swagger 적용 ([faa9971](https://github.com/startup-life/nest-backend/commit/faa9971d39bc13c20fc065de972c3227384d4d30))
+* comment 디렉토리 swagger 작성 ([bcc0320](https://github.com/startup-life/nest-backend/commit/bcc03205f394187b3b21479b90c583e9bbcc240d))
+* post 디렉토리 swagger 작성 ([8839e61](https://github.com/startup-life/nest-backend/commit/8839e61cd4161ccff1dabbbf994ded2d9efb3917))
+* swagger 적용 ([2ad90e1](https://github.com/startup-life/nest-backend/commit/2ad90e182255b5ce4b26c1895e77b72cf1fcfbbd))
+* upload 디렉토리 swagger 작성 ([ceb1125](https://github.com/startup-life/nest-backend/commit/ceb1125878f6433fdff96af1b34c8ffaf5e4ee5d))
+* user 디렉토리에 swagger 적용 ([930a7d9](https://github.com/startup-life/nest-backend/commit/930a7d955f0d8eaf5c4ed5068af0eeb04c0bda85))
+
+### 🐛 BUG FIXES
+
+* auth 디렉토리 swagger 내용 수정 ([6faa321](https://github.com/startup-life/nest-backend/commit/6faa3213fab3bb090304b4038421b6fcc9ca6a2f))
+* auth 디렉토리 swagger 내용 수정 ([c0d0eb6](https://github.com/startup-life/nest-backend/commit/c0d0eb6d35e030362a46719b91d403f951888377))
+* auth 디렉토리의 api 가 반환하는 오류를 자세히 다시 작성 ([d658993](https://github.com/startup-life/nest-backend/commit/d658993018b1787e0dfaf2ddc8754dccb1100a1c))
+* comment 디렉토리 swagger 내용 수정 ([8a9398f](https://github.com/startup-life/nest-backend/commit/8a9398f6029cea8b62cfb2ccf73f69d6e129035a))
+* comment 디렉토리 swagger 내용 수정 ([17de026](https://github.com/startup-life/nest-backend/commit/17de0268c78ad5e65da4ec9b912ac56c378c46df))
+* user 디렉토리 swagger 내용 수정 ([9057391](https://github.com/startup-life/nest-backend/commit/9057391d50c790af7618b5ccafe5870381c42cf2))
+* user 디렉토리 swagger 내용 수정 ([b0e2af4](https://github.com/startup-life/nest-backend/commit/b0e2af42ffa052cdde447af4554ef1a40d4c080f))
+
 ## [1.2.1](https://github.com/startup-life/nest-backend/compare/v1.2.0...v1.2.1) (2024-08-28)
 
 ### 🐛 BUG FIXES
