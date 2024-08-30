@@ -44,6 +44,7 @@ export class CreateUserDto {
         type: String,
         description: '프로필 이미지 경로',
         example: 'iamge/profile/test.jpg',
+        required: false,
     })
     @IsOptional()
     @IsString()

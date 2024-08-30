@@ -48,7 +48,11 @@ export class UserController {
     @Get(':user_id')
     @UseGuards(AuthGuard('jwt'))
     @ApiBearerAuth()
-    @ApiParam({ name: 'user_id', example: 1, description: '유저 ID' })
+    @ApiParam({
+        name: 'user_id',
+        example: 1,
+        description: '유저 ID',
+    })
     @ApiOkResponse({
         description: '유저 정보 가져오기 성공',
         schema: {
@@ -64,17 +68,17 @@ export class UserController {
                 deletedAt: { type: 'string', nullable: true },
                 profileImagePath: { type: 'string' },
             },
-        },
-        example: {
-            userId: 1,
-            email: 'test@test.com',
-            nickname: 'test1234',
-            fileId: 1,
-            sessionId: null,
-            createdAt: '0000-00-00T00:00:00.000Z',
-            updatedAt: '0000-00-00T00:00:00.000Z',
-            deletedAt: null,
-            profileImagePath: 'image/profile/test.jpg',
+            example: {
+                userId: 1,
+                email: 'test@test.com',
+                nickname: 'test1234',
+                fileId: 1,
+                sessionId: null,
+                createdAt: '0000-00-00T00:00:00.000Z',
+                updatedAt: '0000-00-00T00:00:00.000Z',
+                deletedAt: null,
+                profileImagePath: 'image/profile/test.jpg',
+            },
         },
     })
     @ApiBadRequestResponse({
@@ -122,8 +126,15 @@ export class UserController {
     @Put(':user_id')
     @UseGuards(AuthGuard('jwt'), UserMatchGuard)
     @ApiBearerAuth()
-    @ApiParam({ name: 'user_id', example: 1, description: '유저 ID' })
-    @ApiBody({ type: UpdateUserDto, description: '회원 정보 수정 데이터' })
+    @ApiParam({
+        name: 'user_id',
+        example: 1,
+        description: '유저 ID',
+    })
+    @ApiBody({
+        type: UpdateUserDto,
+        description: '회원 정보 수정 데이터',
+    })
     @ApiOkResponse({
         description: '회원 정보 수정 성공',
         schema: {
@@ -139,17 +150,17 @@ export class UserController {
                 deletedAt: { type: 'string', nullable: true },
                 profileImagePath: { type: 'string' },
             },
-        },
-        example: {
-            userId: 1,
-            email: 'test@test.com',
-            nickname: 'test1234',
-            fileId: 1,
-            sessionId: null,
-            createdAt: '0000-00-00T00:00:00.000Z',
-            updatedAt: '0000-00-00T00:00:00.000Z',
-            deletedAt: null,
-            profileImagePath: 'image/profile/test.jpg',
+            example: {
+                userId: 1,
+                email: 'test@test.com',
+                nickname: 'test1234',
+                fileId: 1,
+                sessionId: null,
+                createdAt: '0000-00-00T00:00:00.000Z',
+                updatedAt: '0000-00-00T00:00:00.000Z',
+                deletedAt: null,
+                profileImagePath: 'image/profile/test.jpg',
+            },
         },
     })
     @ApiBadRequestResponse({
@@ -226,8 +237,15 @@ export class UserController {
     @Patch(':user_id/password')
     @UseGuards(AuthGuard('jwt'), UserMatchGuard)
     @ApiBearerAuth()
-    @ApiParam({ name: 'user_id', example: 1, description: '유저 ID' })
-    @ApiBody({ type: UpdatePasswordDto, description: '비밀번호 변경 데이터' })
+    @ApiParam({
+        name: 'user_id',
+        example: 1,
+        description: '유저 ID',
+    })
+    @ApiBody({
+        type: UpdatePasswordDto,
+        description: '비밀번호 변경 데이터',
+    })
     @ApiOkResponse({
         description: '비밀번호 변경 성공',
         schema: {
@@ -243,17 +261,17 @@ export class UserController {
                 deletedAt: { type: 'string', nullable: true },
                 profileImagePath: { type: 'string' },
             },
-        },
-        example: {
-            userId: 1,
-            email: 'test@test.com',
-            nickname: 'test1234',
-            fileId: 1,
-            sessionId: null,
-            createdAt: '0000-00-00T00:00:00.000Z',
-            updatedAt: '0000-00-00T00:00:00.000Z',
-            deletedAt: null,
-            profileImagePath: 'image/profile/test.jpg',
+            example: {
+                userId: 1,
+                email: 'test@test.com',
+                nickname: 'test1234',
+                fileId: 1,
+                sessionId: null,
+                createdAt: '0000-00-00T00:00:00.000Z',
+                updatedAt: '0000-00-00T00:00:00.000Z',
+                deletedAt: null,
+                profileImagePath: 'image/profile/test.jpg',
+            },
         },
     })
     @ApiBadRequestResponse({
@@ -323,7 +341,11 @@ export class UserController {
     @UseGuards(AuthGuard('jwt'), UserMatchGuard)
     @HttpCode(204)
     @ApiBearerAuth()
-    @ApiParam({ name: 'user_id', example: 1, description: '유저 ID' })
+    @ApiParam({
+        name: 'user_id',
+        example: 1,
+        description: '유저 ID',
+    })
     @ApiNoContentResponse({ description: '회원 탈퇴 성공' })
     @ApiBadRequestResponse({
         description: 'userId 파라미터가 없음',
@@ -378,8 +400,8 @@ export class UserController {
         schema: {
             type: 'boolean',
             description: '이메일 중복 여부',
+            example: false,
         },
-        example: false,
     })
     @ApiBadRequestResponse({
         description: '이메일이 없음',
@@ -401,13 +423,18 @@ export class UserController {
 
     // 닉네임 중복 체크
     @Get('check/nickname')
+    @ApiQuery({
+        name: 'nickname',
+        example: 'test1234',
+        description: '닉네임',
+    })
     @ApiOkResponse({
         description: '닉네임 중복 체크 성공',
         schema: {
             type: 'boolean',
             description: '닉네임 중복 여부',
+            example: false,
         },
-        example: false,
     })
     @ApiBadRequestResponse({
         description: '닉네임이 없음',
