@@ -1,5 +1,24 @@
 # CHANGELOG
 
+## [1.2.1](https://github.com/startup-life/nest-backend/compare/v1.2.0...v1.2.1) (2024-08-28)
+
+### 🐛 BUG FIXES
+
+* app 컨트롤러 테스트 코드의 hello world 관련 구버전 테스트 코드 제거 ([1180415](https://github.com/startup-life/nest-backend/commit/118041506e2dedac950b26abb6de915bcb85892b))
+
+## [1.2.0](https://github.com/startup-life/nest-backend/compare/v1.1.0...v1.2.0) (2024-08-28)
+
+### 🚀 NEW FEATURES
+
+* 회원 탈퇴 시 작성한 게시글 및 댓글 삭제 ([1e46a1d](https://github.com/startup-life/nest-backend/commit/1e46a1d6bc24f06f3fdc92880b99e7ee63fdd5ef))
+
+### 🐛 BUG FIXES
+
+* 게시글 불러오는 부분에서 프로필 사진 로드가 안되던 오류 해결 ([fb90415](https://github.com/startup-life/nest-backend/commit/fb90415ab5f42cf235b9b35202bdd81f82668be7))
+* 게시글 조회시 조회수 증가 로직 수정 ([809e25f](https://github.com/startup-life/nest-backend/commit/809e25f32abc8ba11e3902d0435f4c188ca62ae3))
+* 댓글 삭제 시 상태값 204로 수정 ([68ab3e6](https://github.com/startup-life/nest-backend/commit/68ab3e636ed58ad90ccc2ea2fd86c51ca6ab17b9))
+* 댓글 삭제 시 상태값 204로 수정 ([37cc1b1](https://github.com/startup-life/nest-backend/commit/37cc1b1a24f455b51ae1cba8bdac190c7ec1bf48))
+
 ## [1.1.0](https://github.com/startup-life/nest-backend/compare/v1.0.0...v1.1.0) (2024-08-27)
 
 ### 🚀 NEW FEATURES
