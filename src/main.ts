@@ -7,6 +7,7 @@ import helmet from 'helmet';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as fs from 'node:fs';
 
 async function bootstrap() {
     // 먼저 Nest 앱을 생성
@@ -15,10 +16,15 @@ async function bootstrap() {
     // ConfigService를 가져오기
     const configService = app.get(ConfigService);
 
-    // HTTPS 옵션 설정
+    const httpsKey = configService.get<string>('HTTPS_KEY');
+    const httpsCert = configService.get<string>('HTTPS_CERT');
+
+    console.log('HTTPS Key Path:', httpsKey);
+    console.log('HTTPS Cert Path:', httpsCert);
+
     const httpsOptions = {
-        key: configService.get<string>('HTTPS_KEY'),
-        cert: configService.get<string>('HTTPS_CERT'),
+        key: fs.readFileSync(httpsKey, 'utf8'),
+        cert: fs.readFileSync(httpsCert, 'utf8'),
     };
 
     // HTTPS를 적용할 때 새로운 서버를 생성하지 않고, httpsOptions를 설정해 줍니다.
