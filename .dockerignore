@@ -1,0 +1,14 @@
+node_modules
+npm-debug.log
+.DS_Store
+.vscode
+.idea
+.git
+.gitignore
+.husky
+.prettierignore
+.prettierrc
+.eslintrc.js
+commitlint.config.js
+.editorconfig
+.gitmessage.txt
