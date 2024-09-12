@@ -22,7 +22,7 @@ import { UploadModule } from './upload/upload.module';
 @Module({
     imports: [
         ConfigModule.forRoot({
-            envFilePath: '.env.dev',
+            envFilePath: '.env',
         }),
         DatabaseModule,
         ThrottlerModule.forRoot([
