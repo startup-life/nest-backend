@@ -25,8 +25,8 @@ function initializeSentry(): void {
 function setupCommonMiddlewares(app: NestExpressApplication) {
     // CORS 설정
     app.enableCors({
-        origin: '*',  // 프론트엔드 주소
-        credentials: true,  // 쿠키 허용
+        origin: '*', // 프론트엔드 주소
+        credentials: true, // 쿠키 허용
     });
 
     // 정적 파일 경로 설정

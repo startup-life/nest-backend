@@ -1,4 +1,9 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException } from '@nestjs/common';
+import {
+    ExceptionFilter,
+    Catch,
+    ArgumentsHost,
+    HttpException,
+} from '@nestjs/common';
 import * as Sentry from '@sentry/node';
 
 @Catch()
@@ -8,7 +13,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
         const response = ctx.getResponse();
         const request = ctx.getRequest();
 
-        const status = exception instanceof HttpException ? exception.getStatus() : 500;
+        const status =
+            exception instanceof HttpException ? exception.getStatus() : 500;
 
         // Sentry에 예외 전송
         Sentry.captureException(exception);
@@ -18,7 +24,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
             statusCode: status,
             timestamp: new Date().toISOString(),
             path: request.url,
-            message: exception instanceof Error ? exception.message : 'Internal server error',
+            message:
+                exception instanceof Error
+                    ? exception.message
+                    : 'Internal server error',
         });
     }
 }

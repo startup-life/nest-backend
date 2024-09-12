@@ -1,4 +1,4 @@
-import {Controller, Get} from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 
 @Controller()
 export class AppController {
@@ -6,6 +6,6 @@ export class AppController {
 
     @Get('error')
     testError(): any {
-       throw new Error('Test Sentry error');
+        throw new Error('Test Sentry error');
     }
 }
