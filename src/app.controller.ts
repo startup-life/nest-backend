@@ -8,4 +8,9 @@ export class AppController {
     testError(): any {
         throw new Error('Test Sentry error');
     }
+
+    @Get('check/health')
+    checkHealth(): any {
+        return 'ok';
+    }
 }
