@@ -11,8 +11,11 @@ import * as fs from 'fs';
 import * as Sentry from '@sentry/node';
 import { AllExceptionsFilter } from './common/filter/http-exception.filter';
 import { RequestLoggingInterceptor } from './common/interceptor/request-loggin.interceptor';
+/*
+// whatap
 import * as WhatapAgent from 'whatap';
 WhatapAgent.NodeAgent;
+*/
 
 // Sentry 초기화 함수
 function initializeSentry(): void {
