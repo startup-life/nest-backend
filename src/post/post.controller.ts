@@ -23,7 +23,7 @@ export class PostController {
     }
 
     @Put(':post_id')
-    async updateUser(
+    async updatePost(
         @Param('post_id', ParseIntPipe) postId: number,
         @Body() body: UpdatePostDto,
     ): Promise<any> {
@@ -31,7 +31,7 @@ export class PostController {
     }
 
     @Delete(':post_id')
-    async deleteUser(@Param('post_id', ParseIntPipe) postId: number): Promise<void> {
+    async deletePost(@Param('post_id', ParseIntPipe) postId: number): Promise<void> {
         return await this.postService.deletePost(postId);
     }
 }
